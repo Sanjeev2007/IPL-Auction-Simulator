@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-espn-bg: #0B1724;
+  --color-espn-surface: #111827;
+  --color-espn-card: #1F2937;
+  --color-espn-primary: #1E88E5;
+  --color-espn-secondary: #F59E0B;
+  --color-espn-text-primary: #F3F4F6;
+  --color-espn-text-secondary: #9CA3AF;
+  --color-espn-border: rgba(255, 255, 255, 0.1);
+  --animate-ticker: ticker 30s linear infinite;
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Custom base styles */
+body {
+  background-color: var(--color-espn-bg);
+  color: var(--color-espn-text-primary);
+}
+
+/* Card utilities */
+@layer components {
+  .espn-card {
+    @apply bg-[var(--color-espn-card)] rounded-xl shadow-lg border border-[var(--color-espn-border)] overflow-hidden transition-all duration-300;
+  }
+
+  .espn-card-header {
+    @apply bg-[var(--color-espn-surface)] px-5 py-3 border-b border-[var(--color-espn-border)] text-sm font-bold text-gray-200 uppercase tracking-widest flex items-center justify-between;
+  }
+
+  /* Scrollbar styling for dark mode */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-espn-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-espn-primary);
+  }
+}
