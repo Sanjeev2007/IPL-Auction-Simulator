@@ -1,0 +1,234 @@
+Player Name,Role,Base Price
+
+# --- BATSMEN ---
+Abhishek Sharma,Batsmen,2C
+SKY,Batsmen,2C
+Tilak Varma,Batsmen,2C
+Ruturaj Gaikwad,Batsmen,2C
+Rohit Sharma,Batsmen,2C
+Virat Kohli,Batsmen,2C
+Shubman Gill,Batsmen,2C
+Sai Sudharsan,Batsmen,2C
+Markram,Batsmen,2C
+Mitchell Marsh,Batsmen,2C
+Travis Head,Batsmen,2C
+David Miller,Batsmen,2C
+Fraser McGurk,Batsmen,2C
+Faf du Plessis,Batsmen,2C
+Rajat Patidar,Batsmen,2C
+Devdutt Padikkal,Batsmen,2C
+Shreyas Iyer,Batsmen,2C
+Shimron Hetmyer,Batsmen,2C
+Harry Brook,Batsmen,2C
+Steve Smith,Batsmen,2C
+Pathum Nissanka,Batsmen,2C
+David Warner,Batsmen,2C
+Shikhar Dhawan,Batsmen,2C
+Yashasvi Jaiswal,Batsmen,2C
+Tim David,Batsmen,2C
+Dewald Brevis,Batsmen,2C
+Jacob Bethell,Batsmen,1.5C
+Riyan Parag,Batsmen,1.5C
+Tristan Stubbs,Batsmen,1.5C
+Glenn Phillips,Batsmen,1.5C
+Kane Williamson,Batsmen,1.5C
+Sherfane Rutherford,Batsmen,1.5C
+Rovman Powell,Batsmen,1.5C
+Rachin Ravindra,Batsmen,1.5C
+Priyansh Arya,Batsmen,1C
+Rahul Tripathi,Batsmen,1C
+Ayush Badoni,Batsmen,1C
+Ayush Mhatre,Batsmen,1C
+Ajinkya Rahane,Batsmen,1C
+Ben Duckett,Batsmen,1C
+Finn Allen,Batsmen,1C
+Mayank Agarwal,Batsmen,1C
+Manish Pandey,Batsmen,1C
+Matthew Breetzke,Batsmen,1C
+Ashutosh Sharma,Batsmen,1C
+Shashank Singh,Batsmen,1C
+Karun Nair,Batsmen,1C
+Shahrukh Khan,Batsmen,1C
+Sameer Rizvi,Batsmen,1C
+Prithvi Shaw,Batsmen,1C
+Sarfaraz Khan,Batsmen,1C
+Nehal Wadhera,Batsmen,1C
+Nitish Rana,Batsmen,1C
+Mathew Short,Batsmen,1C
+Rilee Rossouw,Batsmen,1C
+Kyle Mayers,Batsmen,1C
+Deepak Hooda,Batsmen,50L
+Vaibhav Suryavanshi,Batsmen,50L
+Abdul Samad,Batsmen,50L
+Urvil Patel,Batsmen,50L
+Naman Dhir,Batsmen,50L
+Shaikh Rasheed,Batsmen,50L
+Musheer Khan,Batsmen,50L
+Abhinav Manohar,Batsmen,50L
+
+# --- WICKETKEEPERS ---
+MSD,Wicketkeepers,2C
+Rishabh Pant,Wicketkeepers,2C
+KL Rahul,Wicketkeepers,2C
+Nicolas Pooran,Wicketkeepers,2C
+Heinrich Klaasen,Wicketkeepers,2C
+Sanju Samson,Wicketkeepers,2C
+Ishan Kishan,Wicketkeepers,2C
+Phil Salt,Wicketkeepers,2C
+Devon Conway,Wicketkeepers,2C
+QDK,Wicketkeepers,2C
+Jos Buttler,Wicketkeepers,2C
+Jitesh Sharma,Wicketkeepers,1.5C
+Dinesh Karthik,Wicketkeepers,1.5C
+Wriddhiman Saha,Wicketkeepers,1.5C
+Ryan Rickelton,Wicketkeepers,1.5C
+Jonny Bairstow,Wicketkeepers,1.5C
+Rahmanullah Gurbaz,Wicketkeepers,1.5C
+Josh Inglis,Wicketkeepers,1.5C
+Dhruv Jurel,Wicketkeepers,1C
+Prabhsimran Singh,Wicketkeepers,1C
+Abhishek Porel,Wicketkeepers,1C
+Tim Seifert,Wicketkeepers,1C
+Narayana Jagadeesan,Wicketkeepers,1C
+Angkrish Raghuvanshi,Wicketkeepers,1C
+Shai Hope,Wicketkeepers,1C
+Matthew Wade,Wicketkeepers,1C
+KS Bharat,Wicketkeepers,50L
+
+# --- ALL ROUNDERS ---
+Hardik Pandya,All Rounders,2C
+Andre Russell,All Rounders,2C
+Sunil Narine,All Rounders,2C
+Shivam Dube,All Rounders,2C
+Ravindra Jadeja,All Rounders,2C
+Marcus Stoinis,All Rounders,2C
+Will Jacks,All Rounders,2C
+Ben Stokes,All Rounders,2C
+Cameron Green,All Rounders,2C
+Marco Jansen,All Rounders,2C
+Sam Curran,All Rounders,2C
+Kieron Pollard,All Rounders,2C
+Glenn Maxwell,All Rounders,2C
+Pat Cummins,All Rounders,2C
+Axar Patel,All Rounders,1.5C
+Washy Sundar,All Rounders,1.5C
+Ravi Ashwin,All Rounders,1.5C
+Krunal Pandya,All Rounders,1.5C
+Jason Holder,All Rounders,1.5C
+Mitch Santner,All Rounders,1.5C
+NKR,All Rounders,1.5C
+Azmat Omarzai,All Rounders,1.5C
+Venky Iyer,All Rounders,1.5C
+Shardul Thakur,All Rounders,1.5C
+Rahul Tewatia,All Rounders,1C
+Vijay Shankar,All Rounders,1C
+Sikandhar Raza,All Rounders,1C
+Romario Shepherd,All Rounders,1C
+Jamie Overton,All Rounders,1C
+Daryl Mitchell,All Rounders,1C
+Donovan Ferreira,All Rounders,1C
+Shahbaz Ahmed,All Rounders,1C
+Aniket Verma,All Rounders,1C
+Anukul Roy,All Rounders,1C
+Ramandeep Singh,All Rounders,1C
+Jimmy Neesham,All Rounders,1C
+Mohammed Nabi,All Rounders,1C
+Moeen Ali,All Rounders,1C
+Shakib al-Hasan,All Rounders,1C
+Vipraj Nigam,All Rounders,50L
+
+# --- FAST BOWLERS ---
+Boom Boom,Fast Bowlers,2C
+Arshdeep Singh,Fast Bowlers,2C
+Harshit Rana,Fast Bowlers,2C
+Mohammed Siraj,Fast Bowlers,2C
+Mohammed Shami,Fast Bowlers,2C
+Bhuvneshwar Kumar,Fast Bowlers,2C
+Deepak Chahar,Fast Bowlers,2C
+Mitchell Starc,Fast Bowlers,2C
+Josh Hazlewood,Fast Bowlers,2C
+Nathan Ellis,Fast Bowlers,2C
+Lockie Ferguson,Fast Bowlers,2C
+Trent Boult,Fast Bowlers,2C
+Jofra Archer,Fast Bowlers,2C
+Kagiso Rabada,Fast Bowlers,2C
+Lungi Ngidi,Fast Bowlers,2C
+Matheesha Pathirana,Fast Bowlers,2C
+Sandeep Sharma,Fast Bowlers,1.5C
+Khaleel Ahmed,Fast Bowlers,1.5C
+Mukesh Kumar,Fast Bowlers,1.5C
+Umesh Yadav,Fast Bowlers,1.5C
+Ishant Sharma,Fast Bowlers,1.5C
+Umran Malik,Fast Bowlers,1.5C
+Natarajan,Fast Bowlers,1.5C
+Prasidh Krishna,Fast Bowlers,1.5C
+Mohit Sharma,Fast Bowlers,1.5C
+Matt Henry,Fast Bowlers,1.5C
+Mark Wood,Fast Bowlers,1.5C
+Tom Curran,Fast Bowlers,1.5C
+Mustafizur Rahman,Fast Bowlers,1.5C
+Avesh Khan,Fast Bowlers,1C
+Tushar Deshpande,Fast Bowlers,1C
+AK47,Fast Bowlers,1C
+Prince Yadav,Fast Bowlers,1C
+Mayank Yadav,Fast Bowlers,1C
+Mohsin Khan,Fast Bowlers,1C
+Yash Dayal,Fast Bowlers,1C
+Akash Deep,Fast Bowlers,1C
+Jaydev Unadkat,Fast Bowlers,1C
+Harshal Patel,Fast Bowlers,1C
+Navdeep Saini,Fast Bowlers,1C
+Alzarri Joseph,Fast Bowlers,1C
+Eshan Malinga,Fast Bowlers,1C
+Kyle Jamieson,Fast Bowlers,1C
+Jacob Duffy,Fast Bowlers,1C
+Corbin Bosch,Fast Bowlers,1C
+Blessing Muzarabani,Fast Bowlers,1C
+Gerald Coetzee,Fast Bowlers,1C
+Chris Woakes,Fast Bowlers,1C
+Naveen-ul-Haq,Fast Bowlers,1C
+Mukesh Choudhary,Fast Bowlers,1C
+Arjun Tendulkar,Fast Bowlers,50L
+Kamalesh Nagarkoti,Fast Bowlers,50L
+Chetan Sakariya,Fast Bowlers,50L
+Vyshak Vijaykumar,Fast Bowlers,50L
+Gurnjapneet Singh,Fast Bowlers,50L
+Shivam Mavi,Fast Bowlers,50L
+Karthik Tyagi,Fast Bowlers,50L
+Akash Singh,Fast Bowlers,50L
+Akash Madhwal,Fast Bowlers,50L
+Sandeep Warrior,Fast Bowlers,50L
+Siddharth Kaul,Fast Bowlers,50L
+Vaibhav Arora,Fast Bowlers,50L
+Yash Thakur,Fast Bowlers,50L
+Ashwani Kumar,Fast Bowlers,50L
+Shamar Joseph,Fast Bowlers,50L
+Kwena Mapaka,Fast Bowlers,50L
+
+# --- SPINNERS ---
+Ravi Bishnoi,Spinners,2C
+Rashid Khan,Spinners,2C
+Noor Ahmad,Spinners,2C
+Varun Chakravarthy,Spinners,2C
+Yuzi Chahal,Spinners,2C
+Kuldeep Yadav,Spinners,2C
+Rahul Chahar,Spinners,1.5C
+Maheesh Theekshana,Spinners,1.5C
+Wanindu Hasaranga,Spinners,1.5C
+Harpreet Brar,Spinners,1C
+Suyash Sharma,Spinners,1C
+Digvesh Rathi,Spinners,1C
+Akil Hossein,Spinners,1C
+Piyush Chawla,Spinners,1C
+Sai Kishore,Spinners,1C
+Adam Zampa,Spinners,1C
+Kamindu Mendis,Spinners,1C
+Vignesh Puthur,Spinners,50L
+Karn Sharma,Spinners,50L
+Shreyas Gopal,Spinners,50L
+Mayank Markande,Spinners,50L
+Mujeeb-ur-Rahman,Spinners,50L
+Swapnil Singh,Spinners,50L
+Allah Ghazanfar,Spinners,50L
+Zeeshan Ansari,Spinners,50L
+M. Siddharth,Spinners,50L

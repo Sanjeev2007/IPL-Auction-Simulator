@@ -1,0 +1,224 @@
+Player_ID,injury_risk,sentiment_score,news_summary
+BAT001,Low,76,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT002,Low,90,India T20I captain. Phenomenal 360-degree batting. Global T20 star.
+BAT003,Low,83,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT004,Low,83,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT005,Medium,82,Stepped down as India T20I captain after 2024 WC win. Strong IPL form continues.
+BAT006,Low,95,Consistent run-machine. Strong IPL 2024 season with century in final. Fan favorite.
+BAT007,Low,85,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT008,Low,71,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT009,Low,82,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT010,Low,81,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT011,Low,78,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT012,Low,89,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT013,Low,71,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT014,Low,88,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT015,Low,87,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT016,Low,74,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT017,Low,87,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT018,Low,72,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT019,Low,74,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT020,Low,77,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT021,Low,86,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT022,Low,82,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT023,Low,84,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT024,Low,88,Young explosive opener. Breakthrough IPL seasons. Consistent run-scorer.
+BAT025,Low,89,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT026,Low,71,Established top-order batter. Consistent performer in T20 franchise leagues.
+BAT027,Low,78,Proven middle-order talent with franchise T20 experience.
+BAT028,Low,63,Proven middle-order talent with franchise T20 experience.
+BAT029,Low,73,Proven middle-order talent with franchise T20 experience.
+BAT030,Low,79,Proven middle-order talent with franchise T20 experience.
+BAT031,Low,79,Proven middle-order talent with franchise T20 experience.
+BAT032,Low,76,Proven middle-order talent with franchise T20 experience.
+BAT033,Low,73,Proven middle-order talent with franchise T20 experience.
+BAT034,Low,66,Proven middle-order talent with franchise T20 experience.
+BAT035,Low,63,Promising batter looking to cement IPL spot with consistent performances.
+BAT036,Low,56,Promising batter looking to cement IPL spot with consistent performances.
+BAT037,Low,52,Promising batter looking to cement IPL spot with consistent performances.
+BAT038,Low,66,Promising batter looking to cement IPL spot with consistent performances.
+BAT039,Low,62,Promising batter looking to cement IPL spot with consistent performances.
+BAT040,Low,69,Promising batter looking to cement IPL spot with consistent performances.
+BAT041,Low,62,Promising batter looking to cement IPL spot with consistent performances.
+BAT042,Low,54,Promising batter looking to cement IPL spot with consistent performances.
+BAT043,Low,60,Promising batter looking to cement IPL spot with consistent performances.
+BAT044,Low,61,Promising batter looking to cement IPL spot with consistent performances.
+BAT045,Low,67,Promising batter looking to cement IPL spot with consistent performances.
+BAT046,Low,63,Promising batter looking to cement IPL spot with consistent performances.
+BAT047,Low,57,Promising batter looking to cement IPL spot with consistent performances.
+BAT048,Low,61,Promising batter looking to cement IPL spot with consistent performances.
+BAT049,Low,54,Promising batter looking to cement IPL spot with consistent performances.
+BAT050,Low,67,Promising batter looking to cement IPL spot with consistent performances.
+BAT051,Low,53,Promising batter looking to cement IPL spot with consistent performances.
+BAT052,Low,54,Promising batter looking to cement IPL spot with consistent performances.
+BAT053,Low,69,Promising batter looking to cement IPL spot with consistent performances.
+BAT054,Low,61,Promising batter looking to cement IPL spot with consistent performances.
+BAT055,Low,66,Promising batter looking to cement IPL spot with consistent performances.
+BAT056,Low,60,Promising batter looking to cement IPL spot with consistent performances.
+BAT057,Low,55,Young/uncapped batter with domestic cricket potential.
+BAT058,Low,46,Young/uncapped batter with domestic cricket potential.
+BAT059,Low,43,Young/uncapped batter with domestic cricket potential.
+BAT060,Low,46,Young/uncapped batter with domestic cricket potential.
+BAT061,Low,40,Young/uncapped batter with domestic cricket potential.
+BAT062,Low,56,Young/uncapped batter with domestic cricket potential.
+BAT063,Low,55,Young/uncapped batter with domestic cricket potential.
+BAT064,Low,59,Young/uncapped batter with domestic cricket potential.
+WK001,High,98,Legendary captain. Semi-retired but enormous fan following. Fitness concerns due to age.
+WK002,Medium,85,Returned from serious car accident. Strong comeback form. Captaincy material.
+WK003,Low,78,Reliable anchor bat. Struggles with strike rate criticism but averages highly.
+WK004,Low,73,Premium wicketkeeper-batter. Key franchise player with proven match-winning ability.
+WK005,Low,88,Destructive middle-order bat. 2024 T20 WC semi-final heroics. Global T20 demand.
+WK006,Low,74,Premium wicketkeeper-batter. Key franchise player with proven match-winning ability.
+WK007,Low,91,Premium wicketkeeper-batter. Key franchise player with proven match-winning ability.
+WK008,Low,77,Premium wicketkeeper-batter. Key franchise player with proven match-winning ability.
+WK009,Low,86,Premium wicketkeeper-batter. Key franchise player with proven match-winning ability.
+WK010,Low,78,Premium wicketkeeper-batter. Key franchise player with proven match-winning ability.
+WK011,Low,73,Premium wicketkeeper-batter. Key franchise player with proven match-winning ability.
+WK012,Low,64,Solid keeper-bat option. Reliable behind stumps with handy batting contributions.
+WK013,Low,72,Solid keeper-bat option. Reliable behind stumps with handy batting contributions.
+WK014,Low,70,Solid keeper-bat option. Reliable behind stumps with handy batting contributions.
+WK015,Low,72,Solid keeper-bat option. Reliable behind stumps with handy batting contributions.
+WK016,Low,66,Solid keeper-bat option. Reliable behind stumps with handy batting contributions.
+WK017,Low,69,Solid keeper-bat option. Reliable behind stumps with handy batting contributions.
+WK018,Low,65,Solid keeper-bat option. Reliable behind stumps with handy batting contributions.
+WK019,Low,58,Backup wicketkeeper option with developing batting skills.
+WK020,Low,46,Backup wicketkeeper option with developing batting skills.
+WK021,Low,55,Backup wicketkeeper option with developing batting skills.
+WK022,Low,55,Backup wicketkeeper option with developing batting skills.
+WK023,Low,58,Backup wicketkeeper option with developing batting skills.
+WK024,Low,55,Backup wicketkeeper option with developing batting skills.
+WK025,Low,61,Backup wicketkeeper option with developing batting skills.
+WK026,Low,57,Backup wicketkeeper option with developing batting skills.
+WK027,Low,48,Young keeper prospect with domestic cricket experience.
+AR001,High,75,"Fitness remains primary concern. When fit, one of the best T20 all-rounders. Captaincy stint at MI."
+AR002,Medium,82,IPL icon and KKR legend. Age-related workload concerns but still impactful.
+AR003,Low,80,KKR legend. Opened batting successfully in 2024. Mystery spin remains effective.
+AR004,Medium,90,High-impact all-rounder. Capable of game-changing performances with bat and ball.
+AR005,Low,80,CSK stalwart. Consistent all-round contributions with bat and left-arm spin.
+AR006,Medium,82,High-impact all-rounder. Capable of game-changing performances with bat and ball.
+AR007,Medium,82,High-impact all-rounder. Capable of game-changing performances with bat and ball.
+AR008,Medium,84,High-impact all-rounder. Capable of game-changing performances with bat and ball.
+AR009,Medium,89,High-impact all-rounder. Capable of game-changing performances with bat and ball.
+AR010,Medium,74,High-impact all-rounder. Capable of game-changing performances with bat and ball.
+AR011,Medium,72,High-impact all-rounder. Capable of game-changing performances with bat and ball.
+AR012,Medium,80,High-impact all-rounder. Capable of game-changing performances with bat and ball.
+AR013,Medium,72,Inconsistent IPL form. Can be devastating on his day. International retirement from ODIs.
+AR014,Medium,87,High-impact all-rounder. Capable of game-changing performances with bat and ball.
+AR015,Low,63,Useful all-round option. Provides balance to the team with dual skills.
+AR016,Low,60,Useful all-round option. Provides balance to the team with dual skills.
+AR017,Low,74,Useful all-round option. Provides balance to the team with dual skills.
+AR018,Low,74,Useful all-round option. Provides balance to the team with dual skills.
+AR019,Low,68,Useful all-round option. Provides balance to the team with dual skills.
+AR020,Low,77,Useful all-round option. Provides balance to the team with dual skills.
+AR021,Low,78,Useful all-round option. Provides balance to the team with dual skills.
+AR022,Low,60,Useful all-round option. Provides balance to the team with dual skills.
+AR023,Low,68,Useful all-round option. Provides balance to the team with dual skills.
+AR024,Low,75,Useful all-round option. Provides balance to the team with dual skills.
+AR025,Low,51,Developing all-rounder with potential in domestic cricket circuit.
+AR026,Low,52,Developing all-rounder with potential in domestic cricket circuit.
+AR027,Low,52,Developing all-rounder with potential in domestic cricket circuit.
+AR028,Low,53,Developing all-rounder with potential in domestic cricket circuit.
+AR029,Low,61,Developing all-rounder with potential in domestic cricket circuit.
+AR030,Low,49,Developing all-rounder with potential in domestic cricket circuit.
+AR031,Low,56,Developing all-rounder with potential in domestic cricket circuit.
+AR032,Low,62,Developing all-rounder with potential in domestic cricket circuit.
+AR033,Low,66,Developing all-rounder with potential in domestic cricket circuit.
+AR034,Low,64,Developing all-rounder with potential in domestic cricket circuit.
+AR035,Low,64,Developing all-rounder with potential in domestic cricket circuit.
+AR036,Low,57,Developing all-rounder with potential in domestic cricket circuit.
+AR037,Low,50,Developing all-rounder with potential in domestic cricket circuit.
+AR038,Low,67,Developing all-rounder with potential in domestic cricket circuit.
+AR039,Low,55,Developing all-rounder with potential in domestic cricket circuit.
+AR040,Low,46,Young all-round prospect. Limited franchise experience.
+PACE001,Medium,95,World's best T20 fast bowler. Workload management crucial. 2024 T20 WC final hero.
+PACE002,High,91,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE003,Medium,76,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE004,Low,70,Dependable pacer for RCB. Occasional expensive spells but picks wickets.
+PACE005,High,72,"Returning from long injury layoff. When fit, one of India's best death bowlers."
+PACE006,Medium,78,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE007,High,88,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE008,High,89,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE009,High,90,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE010,Medium,84,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE011,Medium,81,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE012,Medium,74,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE013,Medium,76,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE014,Low,85,Elite death bowler. Consistently among top IPL wicket-takers each season.
+PACE015,Medium,83,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE016,Medium,84,Premium fast bowler. Key wicket-taking threat across all phases of T20 innings.
+PACE017,Medium,67,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE018,Medium,61,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE019,Medium,71,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE020,Medium,66,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE021,Medium,58,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE022,Medium,67,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE023,Medium,71,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE024,Medium,62,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE025,Medium,60,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE026,Medium,58,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE027,High,74,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE028,Medium,71,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE029,Medium,68,Experienced pacer with ability to bowl in powerplay and death overs.
+PACE030,Low,64,Developing pace bowler with raw pace or good variations.
+PACE031,Low,57,Developing pace bowler with raw pace or good variations.
+PACE032,Low,63,Developing pace bowler with raw pace or good variations.
+PACE033,Low,46,Developing pace bowler with raw pace or good variations.
+PACE034,Low,46,Developing pace bowler with raw pace or good variations.
+PACE035,Low,46,Developing pace bowler with raw pace or good variations.
+PACE036,Low,55,Developing pace bowler with raw pace or good variations.
+PACE037,Low,62,Developing pace bowler with raw pace or good variations.
+PACE038,Low,49,Developing pace bowler with raw pace or good variations.
+PACE039,Low,45,Developing pace bowler with raw pace or good variations.
+PACE040,Low,59,Developing pace bowler with raw pace or good variations.
+PACE041,Low,52,Developing pace bowler with raw pace or good variations.
+PACE042,Low,64,Developing pace bowler with raw pace or good variations.
+PACE043,Low,52,Developing pace bowler with raw pace or good variations.
+PACE044,Low,48,Developing pace bowler with raw pace or good variations.
+PACE045,Low,48,Developing pace bowler with raw pace or good variations.
+PACE046,Low,49,Developing pace bowler with raw pace or good variations.
+PACE047,Low,62,Developing pace bowler with raw pace or good variations.
+PACE048,Low,53,Developing pace bowler with raw pace or good variations.
+PACE049,Low,55,Developing pace bowler with raw pace or good variations.
+PACE050,Low,64,Developing pace bowler with raw pace or good variations.
+PACE051,Low,34,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE052,Low,41,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE053,Low,47,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE054,Low,35,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE055,Low,49,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE056,Low,37,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE057,Low,50,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE058,Low,36,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE059,Low,48,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE060,Low,41,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE061,Low,50,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE062,Low,47,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE063,Low,51,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE064,Low,39,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE065,Low,44,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+PACE066,Low,41,Young fast bowler from domestic circuit. Limited T20 franchise exposure.
+SPIN001,Low,80,Elite spinner. Match-winning wicket-taker with excellent economy in middle overs.
+SPIN002,Low,92,Best T20 spinner globally. Match-winner for any franchise. Exceptional economy rate.
+SPIN003,Low,90,Elite spinner. Match-winning wicket-taker with excellent economy in middle overs.
+SPIN004,Low,78,Strong comeback seasons with KKR. Mystery spin highly effective in middle overs.
+SPIN005,Low,68,Experienced leg-spinner. Recent IPL form inconsistent. Still capable of match-winning spells.
+SPIN006,Low,84,Elite spinner. Match-winning wicket-taker with excellent economy in middle overs.
+SPIN007,Low,71,Quality spinner with proven T20 record. Controls middle overs well.
+SPIN008,Low,58,Quality spinner with proven T20 record. Controls middle overs well.
+SPIN009,Low,68,Quality spinner with proven T20 record. Controls middle overs well.
+SPIN010,Low,61,Spin bowling option with decent T20 experience.
+SPIN011,Low,60,Spin bowling option with decent T20 experience.
+SPIN012,Low,51,Spin bowling option with decent T20 experience.
+SPIN013,Low,52,Spin bowling option with decent T20 experience.
+SPIN014,Low,53,Spin bowling option with decent T20 experience.
+SPIN015,Low,64,Spin bowling option with decent T20 experience.
+SPIN016,Low,47,Spin bowling option with decent T20 experience.
+SPIN017,Low,46,Spin bowling option with decent T20 experience.
+SPIN018,Low,48,Young spin prospect. Developing skills in domestic cricket.
+SPIN019,Low,45,Young spin prospect. Developing skills in domestic cricket.
+SPIN020,Low,51,Young spin prospect. Developing skills in domestic cricket.
+SPIN021,Low,42,Young spin prospect. Developing skills in domestic cricket.
+SPIN022,Low,46,Young spin prospect. Developing skills in domestic cricket.
+SPIN023,Low,42,Young spin prospect. Developing skills in domestic cricket.
+SPIN024,Low,38,Young spin prospect. Developing skills in domestic cricket.
+SPIN025,Low,32,Young spin prospect. Developing skills in domestic cricket.
+SPIN026,Low,47,Young spin prospect. Developing skills in domestic cricket.

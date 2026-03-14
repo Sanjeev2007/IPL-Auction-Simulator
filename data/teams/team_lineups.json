@@ -1,0 +1,140 @@
+{
+    "CSK": {
+        "batting_order": [
+            "BAT035",
+            "BAT038",
+            "BAT046",
+            "BAT062",
+            "WK006",
+            "AR007",
+            "AR036",
+            "PACE001",
+            "PACE029",
+            "PACE059",
+            "SPIN019"
+        ],
+        "bowlers": [
+            "PACE001",
+            "PACE029",
+            "PACE059",
+            "SPIN019",
+            "AR007",
+            "AR036"
+        ]
+    },
+    "MI": {
+        "batting_order": [
+            "BAT009",
+            "BAT008",
+            "BAT019",
+            "BAT048",
+            "WK020",
+            "AR020",
+            "AR029",
+            "PACE058",
+            "PACE007",
+            "PACE049",
+            "SPIN010"
+        ],
+        "bowlers": [
+            "PACE058",
+            "PACE007",
+            "PACE049",
+            "SPIN010",
+            "AR020",
+            "AR029"
+        ]
+    },
+    "RCB": {
+        "batting_order": [
+            "BAT060",
+            "BAT043",
+            "BAT051",
+            "BAT029",
+            "WK014",
+            "AR034",
+            "AR017",
+            "PACE028",
+            "PACE064",
+            "PACE043",
+            "SPIN003"
+        ],
+        "bowlers": [
+            "PACE028",
+            "PACE064",
+            "PACE043",
+            "SPIN003",
+            "AR034",
+            "AR017"
+        ]
+    },
+    "KKR": {
+        "batting_order": [
+            "BAT050",
+            "BAT031",
+            "BAT040",
+            "BAT010",
+            "WK012",
+            "AR019",
+            "AR035",
+            "PACE020",
+            "PACE004",
+            "PACE045",
+            "SPIN006"
+        ],
+        "bowlers": [
+            "PACE020",
+            "PACE004",
+            "PACE045",
+            "SPIN006",
+            "AR019",
+            "AR035"
+        ]
+    },
+    "SRH": {
+        "batting_order": [
+            "BAT025",
+            "BAT030",
+            "BAT039",
+            "BAT012",
+            "WK025",
+            "AR023",
+            "AR037",
+            "PACE052",
+            "PACE060",
+            "PACE065",
+            "SPIN007"
+        ],
+        "bowlers": [
+            "PACE052",
+            "PACE060",
+            "PACE065",
+            "SPIN007",
+            "AR023",
+            "AR037"
+        ]
+    },
+    "RR": {
+        "batting_order": [
+            "BAT013",
+            "BAT006",
+            "BAT036",
+            "BAT034",
+            "WK009",
+            "AR011",
+            "AR031",
+            "PACE037",
+            "PACE042",
+            "PACE053",
+            "SPIN026"
+        ],
+        "bowlers": [
+            "PACE037",
+            "PACE042",
+            "PACE053",
+            "SPIN026",
+            "AR011",
+            "AR031"
+        ]
+    }
+}
