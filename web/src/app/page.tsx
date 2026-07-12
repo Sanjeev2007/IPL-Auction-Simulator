@@ -1,35 +1,18 @@
 import Link from "next/link";
-import { ChevronRight, Trophy, Shield, Play, BarChart2 } from "lucide-react";
-import { API_BASE } from "@/lib/api";
-
-async function getChampionshipOdds() {
-  try {
-    const res = await fetch(`${API_BASE}/mock/simulate_many?n=100`, { method: "POST", cache: "no-store" });
-    if (!res.ok) return { probabilities: [] };
-    return res.json();
-  } catch {
-    return { probabilities: [] };
-  }
-}
-
-async function getTeamStats() {
-  try {
-    const res = await fetch(`${API_BASE}/mock/teams`, { cache: "no-store" });
-    if (!res.ok) return { teams: [] };
-    return res.json();
-  } catch {
-    return { teams: [] };
-  }
-}
+import { Trophy, Shield, Play, BarChart2 } from "lucide-react";
+import {
+  fetchChampionshipOdds,
+  fetchTeamStats,
+  type ChampionshipOdd,
+  type TeamStat,
+} from "@/lib/api";
+import { normalizeBarWidth } from "@/lib/transforms";
 
 export default async function Home() {
-  const [oddsData, statsData] = await Promise.all([
-    getChampionshipOdds(),
-    getTeamStats(),
+  const [odds, teams] = await Promise.all([
+    fetchChampionshipOdds(),
+    fetchTeamStats(),
   ]);
-
-  const odds = oddsData.probabilities || [];
-  const teams = statsData.teams || [];
 
   return (
     <div className="space-y-6">
@@ -66,11 +49,13 @@ export default async function Home() {
             </span>
           </div>
           <div className="p-5 space-y-5">
-            {odds.map((t: any, idx: number) => {
-              const prob = parseFloat(t.championship_probability);
-              // Normalize for bar width against highest prob
-              const highestProb = parseFloat(odds[0]?.championship_probability || 100);
-              const barWidth = `${(prob / highestProb) * 100}%`;
+            {odds.map((t: ChampionshipOdd, idx: number) => {
+              const prob = t.championship_probability;
+              // Normalize for bar width against the highest prob.
+              const barWidth = normalizeBarWidth(
+                prob,
+                odds[0]?.championship_probability ?? 0
+              );
               const isTop = idx === 0;
 
               return (
@@ -127,8 +112,8 @@ export default async function Home() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-espn-border)]">
-                {teams.map((t: any, idx: number) => {
-                  const ovrWidth = (t.overall_strength / 100) * 100;
+                {teams.map((t: TeamStat, idx: number) => {
+                  const ovrWidth = normalizeBarWidth(t.overall_strength, 100);
                   return (
                     <tr key={t.team_id} className="hover:bg-white/5 transition-colors group">
                       <td className="px-5 py-4">
@@ -152,7 +137,7 @@ export default async function Home() {
                             {t.overall_strength}
                           </span>
                           <div className="w-20 bg-[#374151] rounded-full h-1 mt-1 overflow-hidden opacity-50 group-hover:opacity-100 transition-opacity">
-                            <div className="h-full bg-white rounded-full" style={{ width: `${ovrWidth}%` }}></div>
+                            <div className="h-full bg-white rounded-full" style={{ width: ovrWidth }}></div>
                           </div>
                         </div>
                       </td>

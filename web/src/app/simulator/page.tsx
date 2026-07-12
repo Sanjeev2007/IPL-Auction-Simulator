@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Activity, AlertCircle, ArrowRight } from "lucide-react";
-import { API_BASE } from "@/lib/api";
+import { simulateRandomMatch, type MatchResult } from "@/lib/api";
 
 export default function SimulatorPage() {
     const [isSimulating, setIsSimulating] = useState(false);
-    const [matchData, setMatchData] = useState<any>(null);
+    const [matchData, setMatchData] = useState<MatchResult | null>(null);
     const [error, setError] = useState("");
 
     const handleSimulate = async () => {
@@ -16,22 +16,11 @@ export default function SimulatorPage() {
         setMatchData(null);
 
         try {
-            // Play the next scheduled mock match
-            const playRes = await fetch(`${API_BASE}/mock/play_next`, { method: "POST" });
-            if (!playRes.ok) {
-                const err = await playRes.json().catch(() => ({}));
-                throw new Error(err.detail || "Simulation failed — start the league first.");
-            }
-            const played = await playRes.json();
-            if (played.status === "finished") throw new Error("All matches have been played. Restart the league.");
-
-            // Fetch full scorecard for detailed display
-            const scRes = await fetch(`${API_BASE}/mock/scorecard/${played.match_id}`, { cache: "no-store" });
-            if (!scRes.ok) throw new Error("Could not load scorecard");
-            const data = await scRes.json();
+            // Single call: the backend runs a full match and returns the scorecard.
+            const data = await simulateRandomMatch();
             setMatchData(data);
-        } catch (err: any) {
-            setError(err.message || "Something went wrong.");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Something went wrong.");
         } finally {
             setIsSimulating(false);
         }
@@ -48,7 +37,7 @@ export default function SimulatorPage() {
 
                 <div className="flex flex-col sm:flex-row items-center gap-5">
                     <p className="flex-1 text-[var(--color-espn-text-secondary)] text-sm">
-                        Plays the next scheduled match from the mock league. Start the league first via <code className="text-[var(--color-espn-primary)]">POST /mock/start_league</code>.
+                        Simulates a full match between two randomly selected squads with the live engine via <code className="text-[var(--color-espn-primary)]">POST /api/simulate_match</code>.
                     </p>
 
                     <button
@@ -102,7 +91,7 @@ export default function SimulatorPage() {
                                     {/* Team 1 */}
                                     <div className="flex-1 text-center md:text-right w-full">
                                         <div className="text-4xl md:text-6xl font-black text-white tracking-tighter glow-text">
-                                            {matchData.match_info?.team1 ?? matchData.team1}
+                                            {matchData.match_info?.team1}
                                         </div>
                                         <div className="text-3xl md:text-4xl mt-2 font-bold text-[var(--color-espn-primary)] font-mono">
                                             {matchData.innings1?.score}/{matchData.innings1?.wickets}
@@ -123,7 +112,7 @@ export default function SimulatorPage() {
                                     {/* Team 2 */}
                                     <div className="flex-1 text-center md:text-left w-full">
                                         <div className="text-4xl md:text-6xl font-black text-white tracking-tighter">
-                                            {matchData.match_info?.team2 ?? matchData.team2}
+                                            {matchData.match_info?.team2}
                                         </div>
                                         <div className="text-3xl md:text-4xl mt-2 font-bold text-[var(--color-espn-secondary)] font-mono">
                                             {matchData.innings2?.score}/{matchData.innings2?.wickets}
@@ -137,7 +126,7 @@ export default function SimulatorPage() {
 
                             <div className="bg-[var(--color-espn-primary)] py-3 px-6 text-center shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]">
                                 <span className="font-extrabold text-sm md:text-base text-white tracking-widest uppercase">
-                                    {matchData.match_info?.summary ?? matchData.winner}
+                                    {matchData.match_info?.summary}
                                 </span>
                             </div>
                         </div>

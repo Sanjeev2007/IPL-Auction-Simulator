@@ -5,18 +5,17 @@ import {
     LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from "recharts";
 import { BarChart3, RefreshCw, TrendingUp } from "lucide-react";
-import { API_BASE } from "@/lib/api";
+import { simulateRandomMatch, type MatchResult } from "@/lib/api";
+import { buildManhattanData, buildWormData } from "@/lib/transforms";
 
 export default function AnalyticsPage() {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<MatchResult | null>(null);
     const [loading, setLoading] = useState(true);
 
     const fetchScorecard = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/mock/latest_scorecard`, { cache: "no-store" });
-            if (!res.ok) throw new Error("No match data");
-            const js = await res.json();
+            const js = await simulateRandomMatch();
             setData(js);
         } catch (e) {
             console.error(e);
@@ -40,33 +39,11 @@ export default function AnalyticsPage() {
     if (!data || !data.innings1 || !data.innings2) return <div className="text-red-500 font-bold p-10 text-center">No match data yet — start the league and play a match first.</div>;
 
     // Process data for charts
-    const team1 = data.match_info?.team1 ?? data.team1;
-    const team2 = data.match_info?.team2 ?? data.team2;
+    const team1 = data.match_info.team1;
+    const team2 = data.match_info.team2;
 
-    // Manhattan Chart: Runs per over
-    const maxOvers = Math.max(
-        data.innings1.run_rate_by_over?.length ?? 0,
-        data.innings2.run_rate_by_over?.length ?? 0,
-    );
-
-    const manhattanData = Array.from({ length: maxOvers }, (_, i) => {
-        const over = i + 1;
-        const r1 = data.innings1.run_rate_by_over?.find((o: any) => o.over === over)?.runs ?? 0;
-        const r2 = data.innings2.run_rate_by_over?.find((o: any) => o.over === over)?.runs ?? 0;
-        return { over: `Ov ${over}`, [team1]: r1, [team2]: r2 };
-    });
-
-    // Worm Chart: Cumulative runs per over
-    let c1 = 0;
-    let c2 = 0;
-    const wormData = Array.from({ length: maxOvers }, (_, i) => {
-        const over = i + 1;
-        const r1 = data.innings1.run_rate_by_over?.find((o: any) => o.over === over)?.runs ?? 0;
-        const r2 = data.innings2.run_rate_by_over?.find((o: any) => o.over === over)?.runs ?? 0;
-        c1 += r1;
-        c2 += r2;
-        return { over: `Ov ${over}`, [team1]: c1, [team2]: c2 };
-    });
+    const manhattanData = buildManhattanData(data, team1, team2); // runs per over
+    const wormData = buildWormData(data, team1, team2); // cumulative runs per over
 
     return (
         <div className="space-y-6 pb-12">
@@ -93,7 +70,7 @@ export default function AnalyticsPage() {
                 <div className="font-extrabold text-sm uppercase tracking-widest mb-1 opacity-90 text-orange-100 flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" /> Result Summary
                 </div>
-                <div className="font-black text-xl md:text-2xl drop-shadow-md">{data.match_info?.summary ?? data.winner}</div>
+                <div className="font-black text-xl md:text-2xl drop-shadow-md">{data.match_info.summary}</div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

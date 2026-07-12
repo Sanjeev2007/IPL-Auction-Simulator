@@ -1,19 +1,9 @@
 import { Trophy, Medal, Star, TrendingUp } from "lucide-react";
-import { API_BASE } from "@/lib/api";
-
-async function getPointsTable() {
-    try {
-        const res = await fetch(`${API_BASE}/mock/standings`, { cache: "no-store" });
-        if (!res.ok) return { standings: [] };
-        return res.json();
-    } catch {
-        return { standings: [] };
-    }
-}
+import { fetchPointsTable, type PointsRow } from "@/lib/api";
+import { playoffPct } from "@/lib/transforms";
 
 export default async function TournamentPage() {
-    const data = await getPointsTable();
-    const table = data.standings || [];
+    const table = await fetchPointsTable();
 
     return (
         <div className="space-y-6 max-w-5xl mx-auto pb-10">
@@ -51,9 +41,9 @@ export default async function TournamentPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--color-espn-border)] bg-[#1F2937]">
-                            {table.map((t: any, idx: number) => {
+                            {table.map((t: PointsRow, idx: number) => {
                                 const isQualifier = idx < 4;
-                                const playoffPct = isQualifier ? Math.round(70 + (4 - idx) * 7) : Math.round(30 - idx * 4);
+                                const playoffProb = playoffPct(t, idx);
                                 return (
                                     <tr
                                         key={t.team_id}
@@ -82,12 +72,12 @@ export default async function TournamentPage() {
                                         <td className="px-6 py-5 text-center">
                                             <div className="flex flex-col items-center">
                                                 <span className="font-mono text-lg font-bold text-gray-200">
-                                                    {playoffPct}%
+                                                    {playoffProb}%
                                                 </span>
                                                 <div className="w-24 h-1.5 bg-[#0B1724] rounded-full mt-2 overflow-hidden shadow-inner flex items-center">
                                                     <div
-                                                        className={`h-full rounded-full ${playoffPct > 50 ? 'bg-green-500' : 'bg-red-500'}`}
-                                                        style={{ width: `${playoffPct}%` }}
+                                                        className={`h-full rounded-full ${playoffProb > 50 ? 'bg-green-500' : 'bg-red-500'}`}
+                                                        style={{ width: `${playoffProb}%` }}
                                                     ></div>
                                                 </div>
                                             </div>
