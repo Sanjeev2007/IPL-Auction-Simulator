@@ -9,13 +9,19 @@ import os
 import random
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 from src.analytics.player_analytics import PlayerAnalytics
 from src.analytics.team_analytics import TeamAnalytics
 from src.models.match_state import MatchResult
+from src.models.team import Team
 from src.simulation.match_engine import MatchEngine
+from src.simulation.league_engine import (
+    SeasonResult,
+    simulate_season,
+    simulate_multiple_seasons,
+)
 import config
 
 # Initialize Analytics
@@ -99,11 +105,25 @@ def get_championship_odds():
     return {"odds": res}
 
 
+# ---------------------------------------------------------------------------
+# Player pool — loaded once and cached. Rosters (from the bundled teams, the
+# API, or a future auction) reference these players by ID.
+# ---------------------------------------------------------------------------
+_player_pool = None
+
+
+def _load_player_pool():
+    global _player_pool
+    if _player_pool is None:
+        from scripts.run_tournament import load_players
+        _player_pool = load_players()
+    return _player_pool
+
+
 # Helper for Match Simulation API
 def _get_team_for_match(team_id: str):
-    from scripts.run_tournament import load_players, load_teams
-    players = load_players()
-    teams = load_teams(players)
+    from scripts.run_tournament import load_teams
+    teams = load_teams(_load_player_pool())
     for t in teams:
         if t.team_id == team_id:
             return t
@@ -127,9 +147,8 @@ def simulate_match(req: MatchRequest):
 @app.get("/api/scorecard")
 def get_scorecard():
     """Simulates a random match and returns its scorecard (for easy testing)."""
-    from scripts.run_tournament import load_players, load_teams
-    players = load_players()
-    teams = load_teams(players)
+    from scripts.run_tournament import load_teams
+    teams = load_teams(_load_player_pool())
     t1, t2 = random.sample(teams, 2)
     
     engine = MatchEngine(t1, t2, match_id="RANDOM_API_MATCH")
@@ -211,3 +230,119 @@ def _format_match_result(result: MatchResult) -> dict:
         "innings1": format_innings(result.innings_1),
         "innings2": format_innings(result.innings_2)
     }
+
+
+# ---------------------------------------------------------------------------
+# Dynamic-team season simulation
+# ---------------------------------------------------------------------------
+# Accepts an arbitrary set of teams (their rosters) and simulates a full
+# season — league round-robin + a playoff bracket that scales to the team
+# count (2 → straight final, 3 → eliminator + final, ≥4 → Q1/EL/Q2/Final).
+# This is the foundation the M5 auction feeds drafted rosters into.
+
+
+class TeamRoster(BaseModel):
+    team_id: str
+    name: Optional[str] = None
+    batting_order: list[str] = Field(..., description="Exactly 11 player IDs, in batting order")
+    bowlers: list[str] = Field(..., description="Player IDs eligible to bowl")
+
+
+class SeasonRequest(BaseModel):
+    teams: list[TeamRoster]
+    seasons: int = Field(1, ge=1, le=2000, description="Seasons to simulate; >1 returns aggregate odds")
+
+
+def _team_ref(team: Optional[Team]) -> Optional[dict]:
+    if team is None:
+        return None
+    return {"team_id": team.team_id, "team_name": team.name}
+
+
+def _serialize_standings(result: SeasonResult) -> list[dict]:
+    table = []
+    for rank, s in enumerate(result.standings, 1):
+        table.append({
+            "rank": rank,
+            "team_id": s.team.team_id,
+            "team_name": s.team.name,
+            "matches_played": s.matches_played,
+            "wins": s.wins,
+            "losses": s.losses,
+            "points": s.points,
+            "nrr": round(s.nrr, 3),
+        })
+    return table
+
+
+@app.post("/api/simulate_season")
+def simulate_season_endpoint(req: SeasonRequest):
+    """Simulate a full season for a caller-provided set of teams/rosters.
+
+    Supports any number of teams (≥2). With ``seasons > 1`` it also returns
+    aggregate championship/playoff odds across the runs.
+    """
+    from scripts.run_tournament import build_teams
+
+    if len(req.teams) < 2:
+        raise HTTPException(status_code=400, detail="Provide at least 2 teams to simulate a season.")
+
+    team_ids = [t.team_id for t in req.teams]
+    if len(set(team_ids)) != len(team_ids):
+        raise HTTPException(status_code=400, detail="Team IDs must be unique.")
+
+    roster_data = {
+        t.team_id: {
+            "batting_order": t.batting_order,
+            "bowlers": t.bowlers,
+            "name": t.name or t.team_id,
+        }
+        for t in req.teams
+    }
+
+    try:
+        teams = build_teams(_load_player_pool(), roster_data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    # Single representative season for standings + a concrete bracket.
+    result = simulate_season(teams)
+
+    response = {
+        "team_count": len(teams),
+        "standings": _serialize_standings(result),
+        "playoff_teams": [t.team_id for t in result.playoff_teams],
+        "playoffs": {
+            label: {
+                "team1": m.team_1.team_id,
+                "team2": m.team_2.team_id,
+                "winner": m.winner.team_id if m.winner else "Tie",
+                "margin": m.margin,
+                "summary": m.summary(),
+            }
+            for label, m in result.playoff_results.items()
+        },
+        "champion": _team_ref(result.champion),
+        "runner_up": _team_ref(result.runner_up),
+    }
+
+    # Optional: aggregate odds across many seasons.
+    if req.seasons > 1:
+        agg = simulate_multiple_seasons(teams, n=req.seasons)
+        odds = [
+            {
+                "team_id": tid,
+                "team_name": d["team_name"],
+                "championship_probability": d["championship_probability"],
+                "finals_probability": d["finals_probability"],
+                "playoff_probability": d["playoff_probability"],
+                "average_points": d["average_points"],
+            }
+            for tid, d in sorted(
+                agg.items(), key=lambda x: x[1]["championship_probability"], reverse=True
+            )
+        ]
+        response["seasons_simulated"] = req.seasons
+        response["championship_odds"] = odds
+
+    return response

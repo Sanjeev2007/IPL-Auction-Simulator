@@ -42,19 +42,28 @@ def load_players() -> dict[str, Player]:
     return players
 
 
-def load_teams(players: dict[str, Player]) -> list[Team]:
-    teams_path = Path(config.DATA_DIR) / "teams" / "team_lineups.json"
-    if not teams_path.exists():
-        raise FileNotFoundError(f"Missing {teams_path}. Provide team_lineups.json manually.")
-    with open(teams_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    teams = []
-    for team_id, tdata in data.items():
+def build_teams(
+    players: dict[str, Player],
+    roster_data: dict[str, dict],
+) -> list[Team]:
+    """Build ``Team`` objects from an arbitrary roster spec.
+
+    This is the team-count-agnostic core used by both the JSON loader and any
+    caller supplying teams dynamically (e.g. the API / future auction). It
+    accepts *any* number of teams — the simulation engine and playoff bracket
+    scale to whatever is passed in.
+
+    ``roster_data`` maps ``team_id`` → ``{"batting_order": [pid, ...] (11),
+    "bowlers": [pid, ...], "name": <optional display name>}``. All player IDs
+    must resolve against ``players`` (loaded from ``players_master.csv``).
+    """
+    teams: list[Team] = []
+    for team_id, tdata in roster_data.items():
         batting_pids = tdata["batting_order"]
         bowler_pids = tdata["bowlers"]
         if len(batting_pids) != 11:
             raise ValueError(f"Team {team_id}: batting_order must have exactly 11 players")
-        t = Team(team_id=team_id, name=team_id)
+        t = Team(team_id=team_id, name=tdata.get("name", team_id))
         for pid in batting_pids:
             if pid not in players:
                 raise ValueError(f"Player {pid} in {team_id} not found in players_master.csv")
@@ -66,6 +75,23 @@ def load_teams(players: dict[str, Player]) -> list[Team]:
             t.bowling_plan.append((players[pid], 4))
         teams.append(t)
     return teams
+
+
+def load_teams(
+    players: dict[str, Player],
+    teams_path: str | Path | None = None,
+) -> list[Team]:
+    """Load teams from a lineup JSON file (defaults to the bundled 6 teams).
+
+    Pass ``teams_path`` to load a different lineup file, or call
+    :func:`build_teams` directly to supply rosters without touching disk.
+    """
+    teams_path = Path(teams_path) if teams_path else Path(config.DATA_DIR) / "teams" / "team_lineups.json"
+    if not teams_path.exists():
+        raise FileNotFoundError(f"Missing {teams_path}. Provide team_lineups.json manually.")
+    with open(teams_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return build_teams(players, data)
 
 
 def main():

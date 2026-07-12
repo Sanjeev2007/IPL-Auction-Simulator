@@ -145,38 +145,78 @@ def simulate_season(teams: list[Team], verbose: bool = False) -> SeasonResult:
                   f"{s.losses:>3} {s.points:>4} {s.nrr:>+7.3f}")
 
     # --- Playoffs ---
-    top4 = [s.team for s in ranked[:4]]
-    playoff_results = {}
+    # The bracket scales to the number of teams (dynamic team counts):
+    #   >= 4 teams → full IPL playoff (Q1, Eliminator, Q2, Final)
+    #      3 teams → Eliminator (rank 2 vs rank 3), then Final vs rank 1
+    #      2 teams → straight Final (rank 1 vs rank 2)
+    #      1 team  → sole team is champion by default (no match)
+    n = len(ranked)
+    playoff_seeds = [s.team for s in ranked[: min(n, 4)]]
+    playoff_results: dict[str, MatchResult] = {}
+    champion: Optional[Team] = None
+    runner_up: Optional[Team] = None
 
-    # Qualifier 1: Rank 1 vs Rank 2
-    q1 = MatchEngine(top4[0], top4[1], match_id="Q1").simulate()
-    playoff_results["Q1"] = q1
-    q1_winner = q1.winner or top4[0]
-    q1_loser = top4[1] if q1_winner.team_id == top4[0].team_id else top4[0]
+    if n >= 4:
+        top4 = playoff_seeds
 
-    # Eliminator: Rank 3 vs Rank 4
-    elim = MatchEngine(top4[2], top4[3], match_id="EL").simulate()
-    playoff_results["Eliminator"] = elim
-    elim_winner = elim.winner or top4[2]
+        # Qualifier 1: Rank 1 vs Rank 2
+        q1 = MatchEngine(top4[0], top4[1], match_id="Q1").simulate()
+        playoff_results["Q1"] = q1
+        q1_winner = q1.winner or top4[0]
+        q1_loser = top4[1] if q1_winner.team_id == top4[0].team_id else top4[0]
 
-    # Qualifier 2: Q1 loser vs Eliminator winner
-    q2 = MatchEngine(q1_loser, elim_winner, match_id="Q2").simulate()
-    playoff_results["Q2"] = q2
-    q2_winner = q2.winner or q1_loser
+        # Eliminator: Rank 3 vs Rank 4
+        elim = MatchEngine(top4[2], top4[3], match_id="EL").simulate()
+        playoff_results["Eliminator"] = elim
+        elim_winner = elim.winner or top4[2]
 
-    # Final
-    final = MatchEngine(q1_winner, q2_winner, match_id="FN").simulate()
-    playoff_results["Final"] = final
-    champion = final.winner or q1_winner
-    runner_up = q2_winner if champion.team_id == q1_winner.team_id else q1_winner
+        # Qualifier 2: Q1 loser vs Eliminator winner
+        q2 = MatchEngine(q1_loser, elim_winner, match_id="Q2").simulate()
+        playoff_results["Q2"] = q2
+        q2_winner = q2.winner or q1_loser
+
+        # Final
+        final = MatchEngine(q1_winner, q2_winner, match_id="FN").simulate()
+        playoff_results["Final"] = final
+        champion = final.winner or q1_winner
+        runner_up = q2_winner if champion.team_id == q1_winner.team_id else q1_winner
+
+    elif n == 3:
+        r1, r2, r3 = ranked[0].team, ranked[1].team, ranked[2].team
+
+        # Eliminator: Rank 2 vs Rank 3
+        elim = MatchEngine(r2, r3, match_id="EL").simulate()
+        playoff_results["Eliminator"] = elim
+        elim_winner = elim.winner or r2
+
+        # Final: Rank 1 vs Eliminator winner
+        final = MatchEngine(r1, elim_winner, match_id="FN").simulate()
+        playoff_results["Final"] = final
+        champion = final.winner or r1
+        runner_up = elim_winner if champion.team_id == r1.team_id else r1
+
+    elif n == 2:
+        r1, r2 = ranked[0].team, ranked[1].team
+
+        # Straight Final: Rank 1 vs Rank 2
+        final = MatchEngine(r1, r2, match_id="FN").simulate()
+        playoff_results["Final"] = final
+        champion = final.winner or r1
+        runner_up = r2 if champion.team_id == r1.team_id else r1
+
+    elif n == 1:
+        # Only one team — champion by default, no match played.
+        champion = ranked[0].team
 
     if verbose:
         print(f"\n   ── Playoffs ──")
-        print(f"   Q1:         {q1.team_1.team_id} vs {q1.team_2.team_id} → {q1_winner.team_id}")
-        print(f"   Eliminator: {elim.team_1.team_id} vs {elim.team_2.team_id} → {elim_winner.team_id}")
-        print(f"   Q2:         {q2.team_1.team_id} vs {q2.team_2.team_id} → {q2_winner.team_id}")
-        print(f"   Final:      {final.team_1.team_id} vs {final.team_2.team_id} → {champion.team_id}")
-        print(f"\n   🏆 CHAMPION: {champion.name}")
+        for label in ("Q1", "Eliminator", "Q2", "Final"):
+            m = playoff_results.get(label)
+            if m:
+                winner = m.winner.team_id if m.winner else "Tie"
+                print(f"   {label + ':':<11} {m.team_1.team_id} vs {m.team_2.team_id} → {winner}")
+        if champion:
+            print(f"\n   🏆 CHAMPION: {champion.name}")
 
     return SeasonResult(
         standings=ranked,
@@ -184,7 +224,7 @@ def simulate_season(teams: list[Team], verbose: bool = False) -> SeasonResult:
         playoff_results=playoff_results,
         champion=champion,
         runner_up=runner_up,
-        playoff_teams=top4,
+        playoff_teams=playoff_seeds,
     )
 
 
