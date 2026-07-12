@@ -10,7 +10,7 @@ from __future__ import annotations
 import csv
 from collections import defaultdict
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .cricsheet_parser import Delivery, get_phase
 from .name_matcher import PlayerNameMatcher
@@ -101,6 +101,12 @@ class RealStatExtractor:
         # Matchup accumulators: (batter_player_id, bowler_type) → _BatAccum
         self.bat_matchup: dict[tuple[str, str], _BatAccum] = defaultdict(_BatAccum)
 
+        # Recent-form accumulators (last 12 months, all leagues combined),
+        # keyed by player_id. Real replacement for the old md5-synthetic form.
+        self.recent_bat: dict[str, _BatAccum] = defaultdict(_BatAccum)
+        self.recent_bowl: dict[str, _BowlAccum] = defaultdict(_BowlAccum)
+        self.recent_cutoff: str = ""
+
         # Bowler type lookup: Player_ID → "pace" | "spin" | None
         self._bowler_type_by_pid: dict[str, str] = {}
         # Cricsheet name → bowler type (for bowlers NOT in our master)
@@ -162,8 +168,15 @@ class RealStatExtractor:
             latest_year = int(latest[:4])
             cutoff_year = latest_year - self.years_window
             self.cutoff_date = f"{cutoff_year}-01-01"
+            # Recent form = trailing 12 months from the latest match date.
+            try:
+                latest_dt = datetime.strptime(latest, "%Y-%m-%d")
+                self.recent_cutoff = (latest_dt - timedelta(days=365)).strftime("%Y-%m-%d")
+            except ValueError:
+                self.recent_cutoff = f"{latest_year - 1}-01-01"
         else:
             self.cutoff_date = "2020-01-01"
+            self.recent_cutoff = "2023-01-01"
         return self.cutoff_date
 
     def process(self, deliveries: list[Delivery]) -> None:
@@ -217,6 +230,17 @@ class RealStatExtractor:
                         macc.sixes += 1
                     self.matchup_deliveries += 1
 
+                # Recent form (trailing 12 months, all leagues combined)
+                if d.date >= self.recent_cutoff:
+                    racc = self.recent_bat[batter_pid]
+                    racc.matches.add(d.match_id)
+                    racc.runs += d.batter_runs
+                    racc.balls += 1
+                    if d.is_boundary_four:
+                        racc.fours += 1
+                    if d.is_boundary_six:
+                        racc.sixes += 1
+
                 self.matched_deliveries += 1
 
             # Batter dismissal
@@ -225,6 +249,8 @@ class RealStatExtractor:
                 if out_pid:
                     key = (out_pid, league)
                     self.bat_stats[key].dismissals += 1
+                    if d.date >= self.recent_cutoff:
+                        self.recent_bat[out_pid].dismissals += 1
                     # Matchup dismissal tracking
                     btype = self._get_bowler_type(d.bowler)
                     if btype and d.wicket_kind not in ("run out", "retired hurt", "obstructing the field"):
@@ -256,6 +282,16 @@ class RealStatExtractor:
                     pacc.balls += 1
                 if d.is_wicket and d.wicket_kind not in ("run out", "retired hurt"):
                     pacc.wickets += 1
+
+                # Recent form (trailing 12 months, all leagues combined)
+                if d.date >= self.recent_cutoff:
+                    racc = self.recent_bowl[bowler_pid]
+                    racc.matches.add(d.match_id)
+                    racc.runs_conceded += d.total_runs
+                    if not d.is_wide and not d.is_noball:
+                        racc.balls += 1
+                    if d.is_wicket and d.wicket_kind not in ("run out", "retired hurt", "obstructing the field"):
+                        racc.wickets += 1
 
         print(f"   📊 Processed {self.total_deliveries} total deliveries")
         print(f"   ✓ {self.matched_deliveries} matched to known players")
@@ -330,6 +366,27 @@ class RealStatExtractor:
                 "balls": acc.balls,
                 "strike_rate": acc.strike_rate,
                 "dismissals": acc.dismissals,
+            })
+        return rows
+
+    def get_recent_form(self) -> list[dict]:
+        """Get trailing-12-month form (all leagues combined) per player.
+
+        Real replacement for the old md5-synthetic recent_form generator.
+        """
+        rows = []
+        pids = set(self.recent_bat) | set(self.recent_bowl)
+        for pid in sorted(pids):
+            bat = self.recent_bat.get(pid, _BatAccum())
+            bowl = self.recent_bowl.get(pid, _BowlAccum())
+            rows.append({
+                "Player_ID": pid,
+                "matches_12m": max(bat.num_matches, bowl.num_matches),
+                "runs_12m": bat.runs,
+                "avg_12m": bat.average,
+                "sr_12m": bat.strike_rate,
+                "wickets_12m": bowl.wickets,
+                "econ_12m": bowl.economy,
             })
         return rows
 

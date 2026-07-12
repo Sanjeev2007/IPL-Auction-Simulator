@@ -1,9 +1,12 @@
 """
-News Analyzer — generates news_sentiment.csv
+⚠️  DEPRECATED — SYNTHETIC "news sentiment". NOT a real news feed. ⚠️
 
-For each player, generates contextual signals: injury risk, sentiment score,
-and a news summary. Uses the knowledge base for prominent players and
-generates template-based entries for others.
+This module fabricates injury risk / sentiment score / news summary from a
+hand-curated knowledge base plus md5-seeded templates. It is NOT real-time
+sentiment and never was. The default pipeline
+(``scripts/run_real_enrichment.py``) does NOT use this — it writes a neutral
+placeholder news_sentiment.csv instead. Retained only for the legacy
+``scripts/run_enrichment.py`` demo path.
 """
 
 from __future__ import annotations

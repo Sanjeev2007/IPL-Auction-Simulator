@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 """
-Run Phase 2: Dataset Enrichment
+⚠️  DEPRECATED — SYNTHETIC enrichment path. Do not use for real ratings. ⚠️
+
+This legacy script fills the enriched CSVs with md5-seeded synthetic stats and
+fake "news sentiment" (see src/enrichment/stat_generator.py). It is kept only
+as a demo/fallback.
+
+The DEFAULT, supported path is:
+    python scripts/run_real_enrichment.py
+which derives every stat and rating from real Cricsheet ball-by-ball data.
 
 Generates all 4 enrichment datasets:
-  1. ipl_stats_5y.csv
-  2. other_t20_stats_5y.csv
-  3. recent_form_12m.csv
-  4. news_sentiment.csv
+  1. ipl_stats_5y.csv        (synthetic)
+  2. other_t20_stats_5y.csv  (synthetic)
+  3. recent_form_12m.csv     (synthetic)
+  4. news_sentiment.csv      (synthetic / fake sentiment)
 
 Usage:
     python scripts/run_enrichment.py
@@ -53,6 +61,9 @@ def show_sample(path: Path, n: int = 3):
 
 def main():
     total_master = count_master_players()
+    print("=" * 65)
+    print("  ⚠️  DEPRECATED SYNTHETIC ENRICHMENT (md5-seeded, NOT real data)")
+    print("  →  Use `python scripts/run_real_enrichment.py` for real ratings.")
     print("=" * 65)
     print("  IPL Auction Simulator — Phase 2: Dataset Enrichment")
     print(f"  Players in master: {total_master}")

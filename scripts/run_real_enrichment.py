@@ -1,9 +1,24 @@
 #!/usr/bin/env python3
 """
-Run Phase 2 Redesign: Real Cricket Data Pipeline
+Default enrichment pipeline: REAL Cricsheet data → player ratings.
 
-Ingests Cricsheet ball-by-ball data, matches players to players_master,
-computes real statistics, and outputs enriched CSVs.
+Ingests Cricsheet ball-by-ball JSON (data/cricsheet/), matches players to
+players_master, computes real batting/bowling/phase/matchup/recent-form
+statistics, and derives player ratings (derived_scores.csv).
+
+This is the DEFAULT and only supported enrichment path. It does NOT use the
+md5-hash synthetic stat generator (src/enrichment/stat_generator.py) — every
+number written here traces back to real deliveries. Players without enough
+real data are written with data_source="none" and zeroed stats rather than
+invented values.
+
+Outputs (data/enriched/):
+    ipl_stats_5y.csv        real IPL stats (+ phase splits)
+    other_t20_stats_5y.csv  real T20I/BBL/CPL/PSL stats
+    player_matchups.csv     real vs-pace / vs-spin splits
+    recent_form_12m.csv     real trailing-12-month form
+    news_sentiment.csv      neutral placeholder (see write_news_sentiment)
+    derived_scores.csv      final 0–100 ratings computed from the above
 
 Usage:
     python scripts/run_real_enrichment.py
@@ -20,9 +35,7 @@ import config
 from src.enrichment.cricsheet_parser import load_all_data
 from src.enrichment.name_matcher import PlayerNameMatcher
 from src.enrichment.stat_extractor import RealStatExtractor
-from src.enrichment.stat_generator import (
-    generate_ipl_stats, generate_t20_stats, generate_recent_form,
-)
+from src.rating.rating_model import RatingEngine
 
 CRICSHEET_DIR = config.DATA_DIR / "cricsheet"
 
@@ -34,7 +47,7 @@ def load_master_ids() -> list[dict]:
 
 
 def write_ipl_stats(extractor: RealStatExtractor, all_players: list[dict]) -> int:
-    """Write ipl_stats_5y.csv with real data + fallback."""
+    """Write ipl_stats_5y.csv from real data only (no synthetic fallback)."""
     fieldnames = [
         "Player_ID", "data_source", "matches", "runs", "balls_faced",
         "batting_average", "strike_rate", "boundary_pct",
@@ -46,7 +59,7 @@ def write_ipl_stats(extractor: RealStatExtractor, all_players: list[dict]) -> in
 
     real_stats = {r["Player_ID"]: r for r in extractor.get_ipl_stats()}
     real_count = 0
-    fallback_count = 0
+    none_count = 0
 
     path = config.ENRICHED_DATA_DIR / "ipl_stats_5y.csv"
     with open(path, "w", newline="", encoding="utf-8") as f:
@@ -57,40 +70,22 @@ def write_ipl_stats(extractor: RealStatExtractor, all_players: list[dict]) -> in
             pid = p["Player_ID"]
 
             if pid in real_stats and real_stats[pid].get("matches", 0) >= 3:
-                row = real_stats[pid]
+                row = dict(real_stats[pid])
                 row["data_source"] = "real"
                 real_count += 1
             else:
-                # Fallback to generated stats
-                gen = generate_ipl_stats(pid, p["Role"], int(p["Base Price (INR)"]))
-                row = {
-                    "Player_ID": pid, "data_source": "estimated",
-                    "matches": gen["matches"], "runs": gen["runs"],
-                    "balls_faced": 0,
-                    "batting_average": gen["batting_average"],
-                    "strike_rate": gen["strike_rate"],
-                    "boundary_pct": 0,
-                    "fifties": gen["fifties"], "hundreds": gen["hundreds"],
-                    "wickets": gen["wickets"], "economy": gen["economy"],
-                    "bowling_strike_rate": gen["bowling_strike_rate"],
-                    "balls_bowled": 0,
-                    "powerplay_sr": gen["powerplay_sr"],
-                    "middle_sr": gen["middle_sr"],
-                    "death_sr": gen["death_sr"],
-                    "powerplay_econ": gen["powerplay_econ"],
-                    "middle_econ": gen["middle_econ"],
-                    "death_econ": gen["death_econ"],
-                }
-                fallback_count += 1
+                # No synthetic invention: write a zeroed "none" row.
+                row = {"Player_ID": pid, "data_source": "none"}
+                none_count += 1
 
             writer.writerow({k: row.get(k, 0) for k in fieldnames})
 
-    print(f"   ✅ ipl_stats_5y.csv: {real_count} real, {fallback_count} estimated")
+    print(f"   ✅ ipl_stats_5y.csv: {real_count} real, {none_count} no-data")
     return real_count
 
 
 def write_other_t20_stats(extractor: RealStatExtractor, all_players: list[dict]) -> int:
-    """Write other_t20_stats_5y.csv."""
+    """Write other_t20_stats_5y.csv from real data only."""
     fieldnames = [
         "Player_ID", "data_source", "league", "matches", "runs",
         "batting_average", "strike_rate", "wickets", "economy",
@@ -104,26 +99,80 @@ def write_other_t20_stats(extractor: RealStatExtractor, all_players: list[dict])
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
-        # Write real rows
         for row in real_rows:
             row["data_source"] = "real"
             writer.writerow({k: row.get(k, 0) for k in fieldnames})
 
-        # Fallback for players without real data
-        fallback_count = 0
+        # Players with no real T20 data get a single zeroed "none" row.
+        none_count = 0
         for p in all_players:
             pid = p["Player_ID"]
             if pid not in real_pids:
-                gen_entries = generate_t20_stats(pid, p["Role"], int(p["Base Price (INR)"]))
-                for entry in gen_entries:
-                    entry["Player_ID"] = pid
-                    entry["data_source"] = "estimated"
-                    writer.writerow({k: entry.get(k, 0) for k in fieldnames})
-                fallback_count += 1
+                none_row = {k: 0 for k in fieldnames}
+                none_row.update({"Player_ID": pid, "data_source": "none",
+                                 "league": "none"})
+                writer.writerow(none_row)
+                none_count += 1
 
-    total_real = len(real_pids)
-    print(f"   ✅ other_t20_stats_5y.csv: {total_real} real, {fallback_count} estimated")
-    return total_real
+    print(f"   ✅ other_t20_stats_5y.csv: {len(real_pids)} real, {none_count} no-data")
+    return len(real_pids)
+
+
+def write_recent_form(extractor: RealStatExtractor, all_players: list[dict]) -> int:
+    """Write recent_form_12m.csv from real trailing-12-month deliveries."""
+    fieldnames = [
+        "Player_ID", "matches_12m", "runs_12m", "avg_12m",
+        "sr_12m", "wickets_12m", "econ_12m",
+    ]
+
+    real_rows = {r["Player_ID"]: r for r in extractor.get_recent_form()}
+
+    path = config.ENRICHED_DATA_DIR / "recent_form_12m.csv"
+    real_count = 0
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for p in all_players:
+            pid = p["Player_ID"]
+            if pid in real_rows:
+                writer.writerow({k: real_rows[pid].get(k, 0) for k in fieldnames})
+                real_count += 1
+            else:
+                zero_row = {k: 0 for k in fieldnames}
+                zero_row["Player_ID"] = pid  # zeroed — no recent data
+                writer.writerow(zero_row)
+
+    print(f"   ✅ recent_form_12m.csv: {real_count} with real 12m form "
+          f"(cutoff {extractor.recent_cutoff})")
+    return real_count
+
+
+def write_news_sentiment(all_players: list[dict]) -> int:
+    """Write a NEUTRAL news_sentiment.csv placeholder.
+
+    There is no real news/sentiment feed in this project. The former values
+    were md5-seeded template strings masquerading as "real-time sentiment",
+    so that headline feature is retired here: every player gets an identical
+    neutral row. Because it is constant across players it does not skew the
+    (real-data-driven) ratings. The file is kept only so the ratings schema
+    and any downstream reader stay intact — it must NOT be presented as real
+    or real-time sentiment.
+    """
+    fieldnames = ["Player_ID", "injury_risk", "sentiment_score", "news_summary"]
+    path = config.ENRICHED_DATA_DIR / "news_sentiment.csv"
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for p in all_players:
+            writer.writerow({
+                "Player_ID": p["Player_ID"],
+                "injury_risk": "Unknown",
+                "sentiment_score": 50,          # neutral constant — not a signal
+                "news_summary": "",
+            })
+    print(f"   ✅ news_sentiment.csv: {len(all_players)} neutral placeholders "
+          f"(synthetic sentiment retired)")
+    return len(all_players)
 
 
 def write_player_matchups(extractor: RealStatExtractor) -> int:
@@ -145,22 +194,34 @@ def write_player_matchups(extractor: RealStatExtractor) -> int:
     return len(rows)
 
 
-def show_sample(path: Path, n: int = 3):
-    """Print first n rows of a CSV."""
-    with open(path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        rows = [next(reader) for _ in range(n)]
-    if rows:
-        headers = list(rows[0].keys())
-        print(f"\n   {'  |  '.join(h[:16] for h in headers)}")
-        print(f"   {'─' * min(160, len(headers) * 18)}")
-        for row in rows:
-            print(f"   {'  |  '.join(str(row[h])[:16] for h in headers)}")
+def compute_ratings() -> RatingEngine:
+    """Run the rating engine over the freshly written enriched CSVs."""
+    engine = RatingEngine(config.ENRICHED_DATA_DIR)
+    engine.load_data()
+    engine.compute_ratings()
+    engine.write_csv()
+    return engine
+
+
+def print_top10(engine: RatingEngine, names: dict, roles: dict) -> None:
+    """Sanity check: top-10 players by overall rating."""
+    ranked = sorted(engine.results, key=lambda r: r["overall_rating"], reverse=True)
+    print("\n" + "─" * 65)
+    print("  🏆 Top 10 players by overall rating (sanity check)")
+    print("─" * 65)
+    print(f"   {'Rank':>4}  {'Player':<24} {'Role':<14} "
+          f"{'Bat':>5} {'Bowl':>5} {'Overall':>7}")
+    for i, r in enumerate(ranked[:10], 1):
+        pid = r["Player_ID"]
+        print(f"   {i:>4}  {names.get(pid, pid)[:22]:<24} "
+              f"{roles.get(pid, '?'):<14} "
+              f"{r['bat_rating']:>5.1f} {r['bowl_rating']:>5.1f} "
+              f"{r['overall_rating']:>7.1f}")
 
 
 def main():
     print("=" * 65)
-    print("  IPL Auction Simulator — Phase 2 Redesign: Real Data Pipeline")
+    print("  IPL Auction Simulator — Real Cricsheet Enrichment (default)")
     print("=" * 65)
 
     # 1. Load players
@@ -194,75 +255,46 @@ def main():
     real_pids = extractor.get_players_with_data()
     print(f"\n   🏏 Players with real data: {len(real_pids)} / {len(all_players)}")
 
-    # 7. Write output CSVs
-    print("\n   📝 Writing output files...")
+    # 7. Write enriched CSVs (all real; no synthetic generator)
+    print("\n   📝 Writing enriched datasets (real data only)...")
     ipl_real = write_ipl_stats(extractor, all_players)
     t20_real = write_other_t20_stats(extractor, all_players)
     matchup_count = write_player_matchups(extractor)
+    form_real = write_recent_form(extractor, all_players)
+    write_news_sentiment(all_players)
 
-    # 8. Summary
+    # 8. Derive ratings from the real enriched data
+    print("\n   🧮 Deriving player ratings → derived_scores.csv ...")
+    engine = compute_ratings()
+    print(f"   ✅ derived_scores.csv: {len(engine.results)} rated players")
+
+    # 9. Summary
     print("\n" + "=" * 65)
     print("  📊 Pipeline Summary")
     print("=" * 65)
-    print(f"   Matches processed:      {len(set(d.match_id for d in deliveries if d.date >= extractor.cutoff_date))}")
+    matches_in_window = len(set(
+        d.match_id for d in deliveries if d.date >= extractor.cutoff_date
+    ))
+    print(f"   Matches processed (5y): {matches_in_window}")
     print(f"   Deliveries processed:   {extractor.total_deliveries}")
     print(f"   Players with real data: {len(real_pids)} / {len(all_players)} "
           f"({len(real_pids)/len(all_players)*100:.0f}%)")
     print(f"   IPL stats (real):       {ipl_real}")
     print(f"   T20 stats (real):       {t20_real}")
+    print(f"   Recent-form (real 12m): {form_real}")
     print(f"   Matchup entries:        {matchup_count}")
+    print(f"   Ratings written:        {len(engine.results)}")
 
-    # 9. Sample output
-    print("\n" + "─" * 65)
-    print("  📋 Sample Rows")
-    print("─" * 65)
-
-    for name in ("ipl_stats_5y.csv", "other_t20_stats_5y.csv"):
-        p = config.ENRICHED_DATA_DIR / name
-        if p.exists():
-            print(f"\n   ── {name} ──")
-            show_sample(p)
-
-    # 10. Matchup analysis
-    matchup_path = config.ENRICHED_DATA_DIR / "player_matchups.csv"
-    if matchup_path.exists():
-        print(f"\n   ── player_matchups.csv (10 players) ──")
-        with open(matchup_path, "r", encoding="utf-8") as f:
-            matchup_rows = list(csv.DictReader(f))
-
-        # Show 10 sample players (5 pairs of pace/spin)
-        shown_pids = set()
-        sample_rows = []
-        for r in matchup_rows:
-            if r["Player_ID"] not in shown_pids and len(shown_pids) < 10:
-                shown_pids.add(r["Player_ID"])
-            if r["Player_ID"] in shown_pids:
-                sample_rows.append(r)
-
-        if sample_rows:
-            headers = list(sample_rows[0].keys())
-            print(f"\n   {'  |  '.join(h[:16] for h in headers)}")
-            print(f"   {'─' * min(120, len(headers) * 18)}")
-            for row in sample_rows:
-                print(f"   {'  |  '.join(str(row[h])[:16] for h in headers)}")
-
-        # SR distribution: vs pace vs vs spin
-        pace_srs = [float(r["strike_rate"]) for r in matchup_rows if r["bowler_type"] == "pace" and float(r["balls"]) >= 30]
-        spin_srs = [float(r["strike_rate"]) for r in matchup_rows if r["bowler_type"] == "spin" and float(r["balls"]) >= 30]
-
-        if pace_srs and spin_srs:
-            print(f"\n   📊 Strike Rate Distribution (players with 30+ balls):")
-            print(f"      vs Pace  → avg: {sum(pace_srs)/len(pace_srs):.1f}, "
-                  f"min: {min(pace_srs):.1f}, max: {max(pace_srs):.1f}, n={len(pace_srs)}")
-            print(f"      vs Spin  → avg: {sum(spin_srs)/len(spin_srs):.1f}, "
-                  f"min: {min(spin_srs):.1f}, max: {max(spin_srs):.1f}, n={len(spin_srs)}")
-
-        # Unique players with matchup data
-        unique_matchup_pids = set(r["Player_ID"] for r in matchup_rows)
-        print(f"\n   🏏 Players with matchup data: {len(unique_matchup_pids)}")
+    # 10. Sanity check — top 10 by overall rating
+    names, roles = {}, {}
+    with open(config.PLAYERS_MASTER_PATH, "r", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            names[row["Player_ID"]] = row["Player Name"]
+            roles[row["Player_ID"]] = row["Role"]
+    print_top10(engine, names, roles)
 
     print("\n" + "=" * 65)
-    print("  ✅ Phase 2 complete — real data + matchups")
+    print("  ✅ Real enrichment complete — ratings derived from Cricsheet data")
     print("=" * 65)
 
 

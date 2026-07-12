@@ -1,13 +1,21 @@
 """
-Stat generation engine for players without known data.
+⚠️  DEPRECATED — SYNTHETIC (md5-seeded) STAT GENERATOR. NOT REAL DATA. ⚠️
 
-Generates plausible T20 statistics based on:
+This module fabricates plausible-looking T20 statistics by md5-hashing the
+Player_ID and varying canned per-role/per-tier templates. None of it is real.
+In particular ``generate_news_sentiment`` produced the fake "real-time news
+sentiment" the README once advertised — that headline feature is RETIRED.
+
+The default pipeline (``scripts/run_real_enrichment.py``) no longer imports or
+calls anything in this file; it derives every number from real Cricsheet
+ball-by-ball data. This module is retained only for the legacy
+``scripts/run_enrichment.py`` demo path and must never be presented as, or
+relabelled into, real or real-time data.
+
+Generates statistics based on:
   - Player role (Batter / WK / All-rounder / Fast Bowler / Spinner)
   - Base price tier (2Cr / 1.5Cr / 1Cr / 50L)
-  - Deterministic seeding from Player_ID for reproducibility
-
-This ensures every player gets realistic stats even without
-explicit knowledge-base entries.
+  - Deterministic md5 seeding from Player_ID for reproducibility
 """
 
 from __future__ import annotations
@@ -369,7 +377,12 @@ _SENTIMENT_TEMPLATES = {
 
 
 def generate_news_sentiment(player_id: str, role: str, base_price: int) -> dict:
-    """Generate news/sentiment data for a player."""
+    """⚠️ SYNTHETIC/FAKE — retired. Returns md5-seeded template "sentiment".
+
+    This is NOT real-time news sentiment (there is no news feed in this
+    project). The default pipeline no longer calls it; kept only so the legacy
+    ``run_enrichment.py`` demo path still runs. Do not present as real.
+    """
     tier = price_tier(base_price)
     seed = _seed_from_id(player_id + "_news")
 

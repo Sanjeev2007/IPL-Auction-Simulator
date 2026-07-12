@@ -318,60 +318,47 @@ WK017,real,PSL,15,318,22.7,159.8,0,0.0
 WK022,real,PSL,17,424,24.9,141.3,0,0.0
 WK025,real,PSL,13,198,15.2,113.8,0,0.0
 WK026,real,PSL,9,224,28.0,121.1,0,0.0
-BAT008,estimated,International T20,30,681,23.2,122.2,0,0
-BAT008,estimated,Pakistan Super League,36,938,26.3,130.3,0,0
-BAT015,estimated,International T20,41,1170,28.5,136.3,0,0
-BAT015,estimated,Big Bash League,47,1499,31.5,144.4,0,0
-BAT015,estimated,Vitality Blast,33,794,24.4,125.5,0,0
-BAT037,estimated,International T20,18,494,27.5,133.7,0,0
-BAT038,estimated,International T20,20,620,30.7,142.2,0,0
-BAT038,estimated,ILT20,14,324,23.6,123.3,0,0
-BAT039,estimated,International T20,18,507,28.2,135.4,0,0
-BAT042,estimated,International T20,19,547,28.7,137.0,0,0
-BAT043,estimated,International T20,15,358,24.3,125.0,0,0
-BAT045,estimated,International T20,21,674,31.7,144.9,0,0
-BAT045,estimated,Pakistan Super League,15,364,24.6,126.0,0,0
-BAT049,estimated,International T20,19,563,29.5,138.9,0,0
-BAT051,estimated,International T20,17,455,26.9,132.0,0,0
-BAT052,estimated,International T20,15,364,24.6,126.0,0,0
-BAT058,estimated,International T20,6,135,23.1,121.8,0,0
-BAT061,estimated,International T20,9,283,31.1,143.3,0,0
-BAT064,estimated,International T20,7,179,25.9,129.2,0,0
-WK001,estimated,International T20,45,1379,30.4,141.4,0,0
-WK001,estimated,Caribbean Premier League,31,707,23.3,122.5,0,0
-WK001,estimated,Big Bash League,37,968,26.3,130.6,0,0
-WK021,estimated,International T20,22,724,32.4,146.8,0,0
-WK021,estimated,SA20,16,401,25.3,127.9,0,0
-WK023,estimated,International T20,14,332,24.1,124.6,0,0
-WK024,estimated,International T20,19,559,29.3,138.5,0,0
-AR025,estimated,International T20,20,426,25.4,136.3,15,8.3
-AR026,estimated,International T20,15,265,21.4,124.2,9,7.5
-AR040,estimated,International T20,8,160,23.9,131.8,6,8.0
-PACE021,estimated,International T20,34,86,6.1,85.1,44,8.7
-PACE021,estimated,ILT20,24,41,4.4,69.4,24,7.6
-PACE032,estimated,International T20,15,24,4.2,67.5,14,7.5
-PACE033,estimated,International T20,19,41,5.3,78.0,22,8.2
-PACE035,estimated,International T20,18,35,4.9,73.8,19,7.9
-PACE038,estimated,International T20,20,44,5.4,78.8,24,8.3
-PACE038,estimated,Big Bash League,22,56,6.2,85.5,29,8.7
-PACE050,estimated,International T20,18,37,5.1,75.7,20,8.1
-PACE051,estimated,International T20,10,25,6.1,85.0,13,8.7
-PACE052,estimated,International T20,9,20,5.4,79.0,11,8.3
-PACE054,estimated,International T20,6,9,4.0,65.7,6,7.3
-PACE058,estimated,International T20,7,11,4.2,67.4,7,7.5
-PACE059,estimated,International T20,7,12,4.4,69.8,7,7.6
-PACE060,estimated,International T20,8,17,5.2,77.1,9,8.1
-PACE063,estimated,International T20,9,21,5.8,81.8,11,8.5
-PACE066,estimated,International T20,10,24,5.9,83.5,13,8.6
-SPIN004,estimated,International T20,32,48,3.9,65.5,29,6.9
-SPIN004,estimated,Caribbean Premier League,38,70,4.7,72.3,40,7.3
-SPIN009,estimated,International T20,26,48,4.7,72.3,27,7.3
-SPIN011,estimated,International T20,21,51,5.9,83.4,26,8.1
-SPIN011,estimated,SA20,15,24,4.2,67.6,14,7.0
-SPIN013,estimated,International T20,21,50,5.8,82.1,26,8.0
-SPIN013,estimated,SA20,15,23,4.0,66.4,14,6.9
-SPIN014,estimated,International T20,15,25,4.3,68.4,15,7.1
-SPIN018,estimated,International T20,8,16,4.9,73.8,9,7.4
-SPIN021,estimated,International T20,6,9,4.0,65.8,6,6.9
-SPIN023,estimated,International T20,10,26,6.2,86.2,13,8.2
-SPIN025,estimated,International T20,6,9,3.8,64.5,5,6.8
+BAT008,none,none,0,0,0,0,0,0
+BAT015,none,none,0,0,0,0,0,0
+BAT037,none,none,0,0,0,0,0,0
+BAT038,none,none,0,0,0,0,0,0
+BAT039,none,none,0,0,0,0,0,0
+BAT042,none,none,0,0,0,0,0,0
+BAT043,none,none,0,0,0,0,0,0
+BAT045,none,none,0,0,0,0,0,0
+BAT049,none,none,0,0,0,0,0,0
+BAT051,none,none,0,0,0,0,0,0
+BAT052,none,none,0,0,0,0,0,0
+BAT058,none,none,0,0,0,0,0,0
+BAT061,none,none,0,0,0,0,0,0
+BAT064,none,none,0,0,0,0,0,0
+WK001,none,none,0,0,0,0,0,0
+WK021,none,none,0,0,0,0,0,0
+WK023,none,none,0,0,0,0,0,0
+WK024,none,none,0,0,0,0,0,0
+AR025,none,none,0,0,0,0,0,0
+AR026,none,none,0,0,0,0,0,0
+AR040,none,none,0,0,0,0,0,0
+PACE021,none,none,0,0,0,0,0,0
+PACE032,none,none,0,0,0,0,0,0
+PACE033,none,none,0,0,0,0,0,0
+PACE035,none,none,0,0,0,0,0,0
+PACE038,none,none,0,0,0,0,0,0
+PACE050,none,none,0,0,0,0,0,0
+PACE051,none,none,0,0,0,0,0,0
+PACE052,none,none,0,0,0,0,0,0
+PACE054,none,none,0,0,0,0,0,0
+PACE058,none,none,0,0,0,0,0,0
+PACE059,none,none,0,0,0,0,0,0
+PACE060,none,none,0,0,0,0,0,0
+PACE063,none,none,0,0,0,0,0,0
+PACE066,none,none,0,0,0,0,0,0
+SPIN004,none,none,0,0,0,0,0,0
+SPIN009,none,none,0,0,0,0,0,0
+SPIN011,none,none,0,0,0,0,0,0
+SPIN013,none,none,0,0,0,0,0,0
+SPIN014,none,none,0,0,0,0,0,0
+SPIN018,none,none,0,0,0,0,0,0
+SPIN021,none,none,0,0,0,0,0,0
+SPIN023,none,none,0,0,0,0,0,0
+SPIN025,none,none,0,0,0,0,0,0
