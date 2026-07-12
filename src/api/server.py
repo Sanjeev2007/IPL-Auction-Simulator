@@ -5,8 +5,10 @@ Exposes tournament analytics and match simulation via REST endpoints.
 Run with: uvicorn src.api.server:app --reload
 """
 
+import os
 import random
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
@@ -21,6 +23,23 @@ player_analytics = PlayerAnalytics()
 team_analytics = TeamAnalytics()
 
 app = FastAPI(title="IPL Auction Simulator API", version="1.0")
+
+# ---------------------------------------------------------------------------
+# CORS — allow the browser frontend to call the API.
+# Default allows the Next.js dev server (http://localhost:3000). Override /
+# extend via the CORS_ORIGINS env var (comma-separated list of origins).
+# ---------------------------------------------------------------------------
+_default_origins = "http://localhost:3000,http://127.0.0.1:3000"
+_cors_origins = [
+    o.strip() for o in os.getenv("CORS_ORIGINS", _default_origins).split(",") if o.strip()
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class MatchRequest(BaseModel):
@@ -73,6 +92,7 @@ def get_championship_odds():
     for t in odds:
         res.append({
             "team_id": t["team_id"],
+            "team_name": t["team_name"],
             "championship_probability": t["championship_probability"],
             "finals_probability": t["finals_probability"]
         })

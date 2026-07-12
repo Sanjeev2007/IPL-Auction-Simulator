@@ -19,7 +19,10 @@ class TeamAnalytics:
 
     def _load_data(self):
         teams_path = Path(config.DATA_DIR) / "teams" / "team_lineups.json"
-        
+
+        # Map team_id -> full franchise name (e.g. "CSK" -> "Chennai Super Kings")
+        team_names = dict(config.IPL_TEAMS)
+
         # 1. Base initialization from team lineups
         if teams_path.exists():
             with open(teams_path, "r", encoding="utf-8") as f:
@@ -27,7 +30,7 @@ class TeamAnalytics:
                 for tid, data in lineups.items():
                     self.teams_data[tid] = {
                         "team_id": tid,
-                        "team_name": tid, # Add full name if available
+                        "team_name": team_names.get(tid, tid),
                         "playing_xi_pids": data.get("batting_order", [])
                     }
 
