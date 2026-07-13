@@ -1,129 +1,142 @@
 # IPL Auction Simulator 🏏
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Next.js 15](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A sophisticated, probabilistic T20 cricket simulation engine built using real-world IPL data, player statistics, and news sentiment analysis. This project takes raw auction data and transforms it into a full-scale tournament simulator with a modern, data-dense analytics dashboard.
+A ball-by-ball **T20 cricket simulation engine** built on real [Cricsheet](https://cricsheet.org)
+match data. It derives 0–100 player ratings from historical ball-by-ball deliveries, then runs a
+probabilistic match engine to simulate individual games and full IPL-style tournaments (league +
+playoffs) — served through a FastAPI backend and a dense, terminal-styled Next.js dashboard.
 
----
+> **Where it's headed:** the long-term goal is an auction-first flow — friends draft players into
+> teams (any number of teams), then simulate the tournament. The simulation engine already supports
+> a dynamic team count; a live multiplayer auction is the next phase (see [Roadmap](#-roadmap)).
 
-## 🚀 Overview
-
-The **IPL Auction Simulator** is more than just a random score generator. It uses a multi-layered rating engine to calculate player performance probabilities across different match phases (Powerplay, Middle, Death) and specific matchups (Pace vs. Spin).
-
-### Core Components:
-1.  **Data Ingestion**: Extracts player information from auction CSVs and raw datasets.
-2.  **Stat Enrichment**: Fetches 5-year historical IPL and T20 stats, recent 12-month form, and real-time news sentiment.
-3.  **Rating Engine**: Computes weighted ratings (0-100) based on role-specific metrics.
-4.  **Simulation Engine**: A ball-by-ball T20 match engine that simulates innings based on probabilistic distribution of outcomes (runs, wickets, extras).
-5.  **Analytics Dashboard**: A high-performance Next.js frontend to visualize team strengths, match results, and tournament standings.
+<!-- Live demo + screenshots go here once deployed (M3 deploy step). -->
 
 ---
 
-## 🏗️ Architecture
+## 🚀 How it works
+
+1. **Ingestion** — parse raw Cricsheet ball-by-ball JSON into a normalized delivery dataset.
+2. **Stat extraction** — compute batting/bowling stats per player directly from real deliveries
+   (career, other-T20, and trailing-form windows), plus phase splits (powerplay / middle / death)
+   and matchup splits (vs pace / vs spin).
+3. **Rating model** — blend those into 0–100 ratings:
+   `rating = 0.60 × IPL + 0.25 × other-T20 + 0.15 × recent form`.
+4. **Simulation engine** — a ball-by-ball T20 engine resolves each delivery from batter-vs-bowler
+   ratings and phase context, producing full scorecards; a league engine runs seasons (double
+   round-robin + N-aware playoffs) and aggregates championship odds over many simulations.
+5. **API + dashboard** — FastAPI exposes the engine; the Next.js dashboard visualizes odds, team
+   strength, live match scorecards, and tournament standings.
 
 ```mermaid
 graph TD
-    A[Raw Auction Data] --> B[Ingestion Pipeline]
-    B --> C[Enrichment Engine]
-    D[IPL/T20 Stats] --> C
-    E[News Sentiment] --> C
-    C --> F[Player Rating Model]
-    F --> G[Simulation Engine]
-    G --> H[Match/Tournament Results]
-    H --> I[Analytics Dashboard]
+    A[Cricsheet ball-by-ball JSON] --> B[Ingestion]
+    B --> C[Stat Extraction]
+    C --> D[Rating Model 0-100]
+    D --> E[Match & League Engine]
+    E --> F[FastAPI /api/*]
+    F --> G[Next.js Dashboard]
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech stack
 
-### Backend (Python)
-- **Engine**: Probabilistic match simulation using role-weighted distributions.
-- **Data**: CSV processing, OCR extraction for raw auction sheets.
-- **Rating**: Multi-factor weighting (60% IPL, 25% T20, 15% Recent Form).
+**Backend (Python)**
+- Ball-by-ball probabilistic match + tournament engine (~5,200 LOC, typed).
+- Ratings derived from real Cricsheet data; role-weighted, phase- and matchup-aware.
+- **FastAPI** serving `/api/*`; pandas / numpy for the data pipeline.
 
-### Frontend (Next.js)
-- **Framework**: Next.js 15 (App Router) + TypeScript.
-- **Styling**: Vanilla CSS with a focus on high-density, "ESPN-style" sports analytics UI.
-- **Design**: Dark theme, Inter/Outfit typography, and Apple-inspired aesthetics.
+**Frontend (Next.js)**
+- **Next.js 16** (App Router) + **React 19** + **TypeScript**.
+- **Tailwind CSS v4**, **framer-motion** (motion), **recharts** (charts), **lucide-react** (icons).
+- Design: **"Precision Terminal"** — a dark, data-dense look (pure-black canvas, tabular mono
+  numerics, heat-encoded ratings). Typography: Clash Grotesk (display) / Geist (UI) / Geist Mono (data).
 
 ---
 
-## 📥 Installation
+## 📥 Getting started
 
-### 1. Clone the repository
+The enriched player data (`data/enriched/*.csv`) and team lineups are committed, so the API and
+dashboard run **out of the box** — you only need the raw Cricsheet data if you want to regenerate
+ratings (see [Regenerating ratings](#-regenerating-ratings-from-raw-data)).
+
+### 1. Clone
 ```bash
 git clone https://github.com/Sanjeev2007/IPL-Auction-Simulator.git
 cd IPL-Auction-Simulator
 ```
 
-### 2. Backend Setup
+### 2. Backend (API server)
 ```bash
-# Recommendation: Use a virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+uvicorn src.api.server:app --port 8000
 ```
+API is now at `http://localhost:8000` (e.g. `GET /api/championship_odds`).
 
-### 3. Frontend Setup
+### 3. Frontend (dashboard)
 ```bash
 cd web
 npm install
-```
-
----
-
-## 🎮 Usage
-
-### Running the Backend Pipeline
-
-The simulator runs in distinct phases:
-
-1.  **Ingestion**: `python scripts/run_ingestion.py`
-2.  **Enrichment**: `python scripts/run_enrichment.py`
-3.  **Rating**: `python scripts/run_rating.py`
-4.  **Simulation**: 
-    - Single Match: `python scripts/run_simulation.py`
-    - Full Tournament: `python scripts/run_tournament.py`
-
-### Viewing the Dashboard
-
-```bash
-cd web
 npm run dev
 ```
-Navigate to `http://localhost:3000` to view the live simulator and analytics.
+Open `http://localhost:3000`. (Set `NEXT_PUBLIC_API_BASE` if your API isn't on `:8000`.)
+
+### Run the engine directly (no server)
+```bash
+python scripts/run_simulation.py    # one detailed match + 100-match score distribution
+python scripts/run_tournament.py    # 1 verbose season + 500 seasons of aggregate odds
+```
 
 ---
 
-## 📊 Detailed Modules
+## 🔬 Regenerating ratings from raw data
 
-### Player Rating Model
-Ratings are calculated on a 0-100 scale using:
-- **Batting**: Avg (35%), SR (30%), Volume (20%), Boundary % (15%).
-- **Bowling**: Economy (30%), SR (30%), Wickets (25%), Consistency (15%).
-- **Phase Specialization**: PP/Middle/Death specific ratings.
-- **Matchup Advantage**: Specific boosts for Pace vs. Spin suitability.
+Ratings ship pre-computed. To rebuild them from scratch on real Cricsheet data:
 
-### Simulation Engine
-- **Ball-by-ball resolution**: Every delivery is simulated based on batter vs. bowler ratings.
-- **Wicket fall probabilities**: Derived from bowler strike rates and batter stability.
-- **Target Chasing**: Smart AI for second innings to adjust aggression based on RRR (Required Run Rate).
+```bash
+python scripts/run_real_enrichment.py   # ingest deliveries → stats → ratings (derived_scores.csv)
+```
+
+This is the real, default enrichment path. (The legacy `run_enrichment.py` /
+`stat_generator.py` produced synthetic placeholder data and are **deprecated** — kept only for
+reference and clearly marked in code.)
+
+---
+
+## 📊 Details
+
+**Rating model (0–100)**
+- Batting and bowling ratings blend IPL (60%), other T20 (25%), and recent form (15%).
+- Phase-specific ratings: powerplay / middle / death.
+- Matchup ratings: vs pace / vs spin.
+
+**Simulation engine**
+- Ball-by-ball resolution: each delivery drawn from batter-vs-bowler ratings and phase context.
+- Full scorecards: batter cards, bowling figures, fall-of-wickets, per-over run rate.
+- Tournament: double round-robin league + playoffs that scale to the team count (2 → final,
+  3 → eliminator + final, 4+ → full Qualifier/Eliminator bracket), aggregated over 500 seasons.
+
+**Current data:** 223 players and 6 team lineups (CSK, MI, RCB, KKR, SRH, RR). The engine itself is
+team-count-agnostic — arbitrary rosters can be supplied via `POST /api/simulate_season`.
 
 ---
 
 ## 📈 Roadmap
-- [x] Core Simulation Engine
-- [x] Multi-source Stat Enrichment
-- [x] Next.js Dashboard v1
-- [ ] Live Ball-by-ball Streaming Mode
-- [ ] Team Strength Balancer (AI-based Trades)
-- [ ] Multi-season Career Progression Simulation
+- [x] Ball-by-ball match + tournament engine
+- [x] Ratings derived from real Cricsheet data
+- [x] Dynamic team count (N-aware playoffs)
+- [x] "Precision Terminal" analytics dashboard
+- [ ] Deploy (live demo link)
+- [ ] Live multiplayer auction — draft rosters, then simulate
 
 ---
 
 ## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+MIT — see [LICENSE](LICENSE).
