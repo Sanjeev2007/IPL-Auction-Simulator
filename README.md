@@ -70,28 +70,38 @@ git clone https://github.com/Sanjeev2007/IPL-Auction-Simulator.git
 cd IPL-Auction-Simulator
 ```
 
-### 2. Backend (API server)
-```bash
-python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn src.api.server:app --port 8000
-```
-API is now at `http://localhost:8000` (e.g. `GET /api/championship_odds`).
-
-### 3. Frontend (dashboard)
+### 2. Frontend (dashboard)
+The dashboard is a **static site** — the engine's output is pre-generated to JSON
+(committed under `web/src/data/` + `web/public/data/`), so it runs standalone with
+no backend:
 ```bash
 cd web
 npm install
-npm run dev
+npm run dev        # → http://localhost:3000
 ```
-Open `http://localhost:3000`. (Set `NEXT_PUBLIC_API_BASE` if your API isn't on `:8000`.)
 
-### Run the engine directly (no server)
+### 3. Run the engine / API (optional)
+The Python engine and its FastAPI server aren't needed to view the dashboard — they
+power the CLI runners and regenerate the site's data:
 ```bash
-python scripts/run_simulation.py    # one detailed match + 100-match score distribution
-python scripts/run_tournament.py    # 1 verbose season + 500 seasons of aggregate odds
+python -m venv .venv
+source .venv/bin/activate               # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+python scripts/run_simulation.py        # one detailed match + 100-match distribution
+python scripts/run_tournament.py        # 1 verbose season + 500 seasons of aggregate odds
+uvicorn src.api.server:app --port 8000  # optional live API at /api/*
 ```
+
+---
+
+## 🌐 Deploy
+
+The dashboard deploys as a **static site on Vercel** — no server, no backend:
+
+- Import the repo on Vercel, set **Root Directory → `web`**. That's it.
+- To refresh the data (odds, tables, match pool) from the engine, run
+  `python scripts/build_web_data.py` locally and commit the regenerated JSON.
 
 ---
 

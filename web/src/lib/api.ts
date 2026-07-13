@@ -1,14 +1,16 @@
 /**
- * API client for the IPL Auction Simulator FastAPI backend.
+ * Static data layer for the IPL Auction Simulator.
  *
- * The backend exposes real `/api/*` routes (see `src/api/server.py`). This module
- * is the single place that knows those routes and their response shapes, adapting
- * each into the field names the pages actually consume. Pages import from here and
- * never touch `fetch`/route strings directly.
+ * This is a backend-free deploy: the Python engine's output is pre-generated into
+ * JSON at build time (see `scripts/build_web_data.py`) and shipped with the site.
+ * The small tables are imported directly (used by server components); the match
+ * pool is fetched from /public on demand (used by the client Simulator/Analytics).
+ * Function signatures match the old FastAPI client, so the pages are unchanged.
  */
 
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
+import teamStatsJson from "../data/team_stats.json";
+import oddsJson from "../data/championship_odds.json";
+import pointsJson from "../data/points_table.json";
 
 /* ------------------------------------------------------------------ */
 /* Shared types                                                        */
@@ -40,7 +42,7 @@ export interface PointsRow {
   name: string;
   /** Mean points across the simulated seasons. */
   points: number;
-  /** Percentage 0–100; 0 when the backend has no tournament results yet. */
+  /** Percentage 0–100. */
   playoff_probability: number;
 }
 
@@ -104,122 +106,105 @@ export interface MatchResult {
 }
 
 /* ------------------------------------------------------------------ */
-/* Fetchers                                                            */
+/* Raw shapes as emitted by scripts/build_web_data.py                  */
+/* ------------------------------------------------------------------ */
+
+interface RawTeam {
+  team_id: string;
+  team_name?: string;
+  batting_strength: number;
+  bowling_strength: number;
+  overall_strength: number;
+}
+interface RawOdd {
+  team_id: string;
+  team_name?: string;
+  championship_probability: number;
+  finals_probability: number;
+}
+interface RawPointsRow {
+  rank: number;
+  team_id: string;
+  team_name?: string;
+  average_points: number;
+  playoff_probability?: number;
+}
+
+const teamStats = teamStatsJson as { teams: RawTeam[] };
+const odds = oddsJson as { odds: RawOdd[] };
+const points = pointsJson as { points_table: RawPointsRow[] };
+
+/* ------------------------------------------------------------------ */
+/* Data accessors (async to keep the old call sites unchanged)         */
 /* ------------------------------------------------------------------ */
 
 /** Team strengths for the Home "Team Strength Index" table. */
 export async function fetchTeamStats(): Promise<TeamStat[]> {
-  try {
-    const res = await fetch(`${API_BASE}/api/team_stats`, { cache: "no-store" });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.teams ?? []).map(
-      (t: {
-        team_id: string;
-        team_name?: string;
-        batting_strength: number;
-        bowling_strength: number;
-        overall_strength: number;
-      }): TeamStat => ({
-        team_id: t.team_id,
-        name: t.team_name ?? t.team_id,
-        batting_strength: t.batting_strength,
-        bowling_strength: t.bowling_strength,
-        overall_strength: t.overall_strength,
-      })
-    );
-  } catch {
-    return [];
-  }
+  return teamStats.teams.map((t) => ({
+    team_id: t.team_id,
+    name: t.team_name ?? t.team_id,
+    batting_strength: t.batting_strength,
+    bowling_strength: t.bowling_strength,
+    overall_strength: t.overall_strength,
+  }));
 }
 
 /** Championship odds for the Home "To Win Championship" panel. */
 export async function fetchChampionshipOdds(): Promise<ChampionshipOdd[]> {
-  try {
-    const res = await fetch(`${API_BASE}/api/championship_odds`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.odds ?? []).map(
-      (t: {
-        team_id: string;
-        team_name?: string;
-        championship_probability: number;
-        finals_probability: number;
-      }): ChampionshipOdd => ({
-        team_id: t.team_id,
-        name: t.team_name ?? t.team_id,
-        championship_probability: t.championship_probability,
-        final_probability: t.finals_probability,
-      })
-    );
-  } catch {
-    return [];
-  }
+  return odds.odds.map((t) => ({
+    team_id: t.team_id,
+    name: t.team_name ?? t.team_id,
+    championship_probability: t.championship_probability,
+    final_probability: t.finals_probability,
+  }));
 }
 
 /** Projected points table for the Tournament page. */
 export async function fetchPointsTable(): Promise<PointsRow[]> {
-  try {
-    const res = await fetch(`${API_BASE}/api/points_table`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.points_table ?? []).map(
-      (t: {
-        rank: number;
-        team_id: string;
-        team_name?: string;
-        average_points: number;
-        playoff_probability?: number;
-      }): PointsRow => ({
-        rank: t.rank,
-        team_id: t.team_id,
-        name: t.team_name ?? t.team_id,
-        points: t.average_points,
-        playoff_probability: t.playoff_probability ?? 0,
-      })
-    );
-  } catch {
-    return [];
-  }
+  return points.points_table.map((t) => ({
+    rank: t.rank,
+    team_id: t.team_id,
+    name: t.team_name ?? t.team_id,
+    points: t.average_points,
+    playoff_probability: t.playoff_probability ?? 0,
+  }));
+}
+
+/* ------------------------------------------------------------------ */
+/* Match pool (client-side; fetched once from /public and cached)      */
+/* ------------------------------------------------------------------ */
+
+let matchPool: MatchResult[] | null = null;
+
+async function loadMatchPool(): Promise<MatchResult[]> {
+  if (matchPool) return matchPool;
+  const res = await fetch("/data/matches.json");
+  if (!res.ok) throw new Error("Could not load simulated matches.");
+  matchPool = (await res.json()) as MatchResult[];
+  return matchPool;
+}
+
+function pick<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
 }
 
 /**
- * Simulate a single match between two teams via `POST /api/simulate_match`.
- * One call returns the full scorecard — no separate play_next/scorecard step.
+ * Return a pre-simulated match for the chosen matchup. The pool covers every
+ * ordered pairing with a few variants, so re-simulating shows real variety.
  */
 export async function simulateMatch(
   team1Id: string,
   team2Id: string
 ): Promise<MatchResult> {
-  const res = await fetch(`${API_BASE}/api/simulate_match`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ team1_id: team1Id, team2_id: team2Id }),
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || "Simulation failed.");
-  }
-  return res.json();
+  const pool = await loadMatchPool();
+  const forPair = pool.filter(
+    (m) => m.match_info.team1 === team1Id && m.match_info.team2 === team2Id
+  );
+  return pick(forPair.length ? forPair : pool);
 }
 
-/**
- * Pick two distinct teams at random and simulate a match between them.
- * Used by the Simulator (on click) and Analytics (on load / re-simulate),
- * both of which show a one-off match rather than a fixed fixture.
- */
+/** A random pre-simulated match (Analytics on load / re-simulate). */
 export async function simulateRandomMatch(): Promise<MatchResult> {
-  const teams = await fetchTeamStats();
-  if (teams.length < 2) {
-    throw new Error("Not enough teams available to simulate a match.");
-  }
-  const first = Math.floor(Math.random() * teams.length);
-  let second = Math.floor(Math.random() * (teams.length - 1));
-  if (second >= first) second += 1; // ensure distinct from `first`
-  return simulateMatch(teams[first].team_id, teams[second].team_id);
+  const pool = await loadMatchPool();
+  return pick(pool);
 }
