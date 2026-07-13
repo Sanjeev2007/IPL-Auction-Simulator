@@ -1,8 +1,11 @@
 # IPL Auction Simulator 🏏
 
+[![Live Demo](https://img.shields.io/badge/▶_live_demo-online-33E1C6?style=flat-square)](https://ipl-auction-simulator-b37e.vercel.app/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**Live demo → https://ipl-auction-simulator-b37e.vercel.app/**
 
 A ball-by-ball **T20 cricket simulation engine** built on real [Cricsheet](https://cricsheet.org)
 match data. It derives 0–100 player ratings from historical ball-by-ball deliveries, then runs a
@@ -13,7 +16,15 @@ playoffs) — served through a FastAPI backend and a dense, terminal-styled Next
 > teams (any number of teams), then simulate the tournament. The simulation engine already supports
 > a dynamic team count; a live multiplayer auction is the next phase (see [Roadmap](#-roadmap)).
 
-<!-- Live demo + screenshots go here once deployed (M3 deploy step). -->
+### Screenshots
+
+**Season overview** — Monte Carlo championship odds + heat-encoded team strength:
+
+![Overview](docs/screenshots/overview.png)
+
+**Match simulator** — pick a matchup, get a full ball-by-ball scorecard:
+
+![Simulator](docs/screenshots/simulator.png)
 
 ---
 
@@ -142,7 +153,7 @@ team-count-agnostic — arbitrary rosters can be supplied via `POST /api/simulat
 - [x] Ratings derived from real Cricsheet data
 - [x] Dynamic team count (N-aware playoffs)
 - [x] "Precision Terminal" analytics dashboard
-- [ ] Deploy (live demo link)
+- [x] Deployed — [live on Vercel](https://ipl-auction-simulator-b37e.vercel.app/)
 - [ ] Live multiplayer auction — draft rosters, then simulate
 
 ---
