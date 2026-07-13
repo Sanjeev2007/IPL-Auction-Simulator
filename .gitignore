@@ -39,3 +39,7 @@ output/
 logs/
 *.log
 .gstack/
+
+# Raw Cricsheet data — fetch with ./download_data.sh (see README).
+# Enriched rating CSVs under data/enriched/ ARE committed so the app runs out of the box.
+data/cricsheet/
