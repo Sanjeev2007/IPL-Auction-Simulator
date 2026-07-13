@@ -1,132 +1,291 @@
 "use client";
 
+/**
+ * Match Analytics — per-over breakdown of a single simulated fixture.
+ *
+ * Precision Terminal port of design/comps/analytics.html. Real data: one
+ * `simulateRandomMatch` on load (re-simulate on demand), fed through the pure
+ * `buildManhattanData` / `buildWormData` transforms. Charts get the same care as
+ * type: hairline grid, mono ticks, teal vs cool series, emphasized endpoints.
+ */
+
 import { useEffect, useState } from "react";
 import {
-    LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from "recharts";
-import { BarChart3, RefreshCw, TrendingUp } from "lucide-react";
-import { simulateRandomMatch, type MatchResult } from "@/lib/api";
+import { RefreshCw } from "lucide-react";
+import { simulateRandomMatch, type Innings, type MatchResult } from "@/lib/api";
 import { buildManhattanData, buildWormData } from "@/lib/transforms";
+import { CountUp } from "@/components/motion";
+import { EmptyState, Kpi, PageHead, Panel } from "@/components/ui";
+
+const TEAL = "#33E1C6"; // accent — innings 1
+const COOL = "#5B8DEF"; // heat cool — innings 2
+const EDGE = "#20252F";
+const FAINT = "#5A6373";
+const SURFACE = "#0A0C10";
+
+function runRate(inn: Innings | null): string {
+  if (!inn) return "—";
+  const overs = parseFloat(String(inn.overs_completed)) || 0;
+  return overs > 0 ? (inn.score / overs).toFixed(2) : "0.00";
+}
+
+function topOver(match: MatchResult): { runs: number; team: string; over: number } {
+  let best = { runs: 0, team: "", over: 0 };
+  for (const inn of [match.innings1, match.innings2]) {
+    if (!inn) continue;
+    for (const o of inn.run_rate_by_over) {
+      if (o.runs > best.runs) best = { runs: o.runs, team: inn.batting_team, over: o.over };
+    }
+  }
+  return best;
+}
 
 export default function AnalyticsPage() {
-    const [data, setData] = useState<MatchResult | null>(null);
-    const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<MatchResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    const fetchScorecard = async () => {
-        setLoading(true);
-        try {
-            const js = await simulateRandomMatch();
-            setData(js);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchScorecard();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="h-[60vh] flex flex-col justify-center items-center gap-4">
-                <RefreshCw className="w-10 h-10 animate-spin text-[var(--color-espn-primary)]" />
-                <span className="text-[var(--color-espn-text-secondary)] font-bold tracking-widest text-sm animate-pulse">GENERATING MATCH DATA</span>
-            </div>
-        );
+  const run = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      setData(await simulateRandomMatch());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Simulation failed.");
+    } finally {
+      setLoading(false);
     }
-    if (!data || !data.innings1 || !data.innings2) return <div className="text-red-500 font-bold p-10 text-center">No match data yet — start the league and play a match first.</div>;
+  };
 
-    // Process data for charts
-    const team1 = data.match_info.team1;
-    const team2 = data.match_info.team2;
+  useEffect(() => {
+    run();
+  }, []);
 
-    const manhattanData = buildManhattanData(data, team1, team2); // runs per over
-    const wormData = buildWormData(data, team1, team2); // cumulative runs per over
-
+  if (!loading && (error || !data?.innings1 || !data?.innings2)) {
     return (
-        <div className="space-y-6 pb-12">
-            <div className="bg-[#111827] border border-[var(--color-espn-border)] p-6 rounded-xl shadow-lg flex flex-col sm:flex-row justify-between items-center gap-4 relative isolate overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1E88E5]/5 to-transparent pointer-events-none"></div>
-                <div className="relative z-10 flex items-center gap-4">
-                    <div className="bg-[#1F2937] p-3 rounded-lg border border-white/5 shadow-inner">
-                        <BarChart3 className="w-6 h-6 text-[var(--color-espn-primary)]" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-black text-white tracking-tight">Global Match Analytics</h2>
-                        <p className="text-xs font-bold text-[var(--color-espn-text-secondary)] uppercase tracking-widest mt-1">Data Modeling Tool</p>
-                    </div>
-                </div>
-                <button
-                    onClick={fetchScorecard}
-                    className="relative z-10 flex items-center gap-2 px-5 py-2.5 bg-[#1F2937] hover:bg-[#374151] hover:text-white text-gray-300 font-bold rounded-lg border border-[var(--color-espn-border)] transition-colors shadow-sm"
-                >
-                    <RefreshCw className="w-4 h-4" /> RE-SIMULATE MATCH
-                </button>
-            </div>
-
-            <div className="bg-gradient-to-r from-[var(--color-espn-secondary)] to-orange-600 text-white p-4 rounded-xl shadow-[0_4px_20px_rgba(245,158,11,0.2)] border border-orange-400 flex flex-col items-center justify-center text-center">
-                <div className="font-extrabold text-sm uppercase tracking-widest mb-1 opacity-90 text-orange-100 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4" /> Result Summary
-                </div>
-                <div className="font-black text-xl md:text-2xl drop-shadow-md">{data.match_info.summary}</div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                {/* Manhattan Chart: Bar Graph runs per over */}
-                <div className="espn-card group">
-                    <div className="espn-card-header bg-[#111827]">
-                        <div className="flex items-center gap-2 text-[var(--color-espn-text-secondary)]">
-                            <span className="w-2 h-2 rounded-full bg-[var(--color-espn-secondary)]"></span>
-                            Manhattan Chart
-                        </div>
-                    </div>
-                    <div className="p-6 h-[400px] bg-[#0B1724]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={manhattanData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                                <XAxis dataKey="over" tick={{ fill: '#9CA3AF', fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} dy={10} />
-                                <YAxis tick={{ fill: '#9CA3AF', fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} />
-                                <Tooltip
-                                    cursor={{ fill: 'rgba(255,255,255,0.02)' }}
-                                    contentStyle={{ backgroundColor: '#1F2937', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 700, boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)' }}
-                                />
-                                <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                                <Bar dataKey={team1} fill="var(--color-espn-secondary)" radius={[4, 4, 0, 0]} maxBarSize={20} />
-                                <Bar dataKey={team2} fill="var(--color-espn-primary)" radius={[4, 4, 0, 0]} maxBarSize={20} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-                {/* Worm Chart: Cumulative Graph runs per over */}
-                <div className="espn-card group">
-                    <div className="espn-card-header bg-[#111827]">
-                        <div className="flex items-center gap-2 text-[var(--color-espn-text-secondary)]">
-                            <span className="w-2 h-2 rounded-full bg-[var(--color-espn-primary)]"></span>
-                            Worm Chart (Cumulative)
-                        </div>
-                    </div>
-                    <div className="p-6 h-[400px] bg-[#0B1724]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={wormData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                                <XAxis dataKey="over" tick={{ fill: '#9CA3AF', fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} dy={10} />
-                                <YAxis tick={{ fill: '#9CA3AF', fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#1F2937', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 700, boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)' }}
-                                />
-                                <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="plainline" />
-                                <Line type="monotone" dataKey={team1} stroke="var(--color-espn-secondary)" strokeWidth={4} dot={{ r: 4, strokeWidth: 2, fill: '#1F2937' }} activeDot={{ r: 7, strokeWidth: 0 }} />
-                                <Line type="monotone" dataKey={team2} stroke="var(--color-espn-primary)" strokeWidth={4} dot={{ r: 4, strokeWidth: 2, fill: '#1F2937' }} activeDot={{ r: 7, strokeWidth: 0 }} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+      <EmptyState title="Match Analytics" meta={error ? "ERROR" : "NO DATA"}>
+        {error || "No match data yet. Start the API server and re-simulate."}
+      </EmptyState>
     );
+  }
+
+  const ready = !loading && data?.innings1 && data?.innings2;
+  const team1 = data?.match_info.team1 ?? "";
+  const team2 = data?.match_info.team2 ?? "";
+  const manhattan = ready ? buildManhattanData(data!, team1, team2) : [];
+  const worm = ready ? buildWormData(data!, team1, team2) : [];
+  const best = ready ? topOver(data!) : null;
+
+  return (
+    <div>
+      <PageHead
+        title="Match Analytics"
+        sub={
+          ready
+            ? `Per-over breakdown of a simulated fixture · ${data!.innings1!.batting_team} vs ${data!.innings2!.batting_team}`
+            : "Per-over breakdown of a simulated fixture."
+        }
+        metaLabel="Source"
+        metaValue="single sim · per over"
+      />
+
+      {/* Summary strip */}
+      <div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {ready ? (
+          <>
+            <Kpi
+              label="Result"
+              value={<span className="font-display text-[18px]">{data!.match_info.winner}</span>}
+              foot={data!.match_info.margin}
+            />
+            <Kpi
+              label={`${data!.innings1!.batting_team} · Innings 1`}
+              valueColor={TEAL}
+              value={
+                <>
+                  <CountUp to={data!.innings1!.score} />
+                  <span className="text-[16px] text-faint">/{data!.innings1!.wickets}</span>
+                </>
+              }
+              foot={`${data!.innings1!.overs_completed} ov · RR ${runRate(data!.innings1)}`}
+            />
+            <Kpi
+              label={`${data!.innings2!.batting_team} · Innings 2`}
+              value={
+                <>
+                  <CountUp to={data!.innings2!.score} />
+                  <span className="text-[16px] text-faint">/{data!.innings2!.wickets}</span>
+                </>
+              }
+              foot={`${data!.innings2!.overs_completed} ov · RR ${runRate(data!.innings2)}`}
+            />
+            <Kpi
+              label="Top Scoring Over"
+              value={
+                <CountUp
+                  to={best!.runs}
+                  suffix={<span className="ml-[3px] text-[13px] text-faint">runs</span>}
+                />
+              }
+              foot={best!.team ? `${best!.team} · over ${best!.over}` : "—"}
+            />
+          </>
+        ) : (
+          [0, 1, 2, 3].map((i) => (
+            <div key={i} className="rounded-md border border-edge bg-surface px-4 py-[14px]">
+              <div className="skel mb-2 h-3 w-20" />
+              <div className="skel h-7 w-16" />
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Re-simulate control */}
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={run}
+          disabled={loading}
+          className="flex items-center gap-2 rounded-md border border-edge bg-elevated px-4 py-2 text-[12px] font-medium text-muted transition-colors hover:border-accent/50 hover:text-ink disabled:opacity-50"
+        >
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          {loading ? "Simulating…" : "Re-simulate match"}
+        </button>
+      </div>
+
+      <ChartPanel
+        title="Manhattan · Runs per Over"
+        meta="1–20 OVERS · RUNS"
+        team1={team1}
+        team2={team2}
+        loading={!ready}
+      >
+        <BarChart data={manhattan} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="2 4" vertical={false} stroke={EDGE} />
+          <XAxis dataKey="over" tick={axisTick} axisLine={false} tickLine={false} dy={6} interval={1} />
+          <YAxis tick={axisTick} axisLine={false} tickLine={false} width={40} />
+          <Tooltip cursor={{ fill: "rgba(255,255,255,0.03)" }} content={<TerminalTooltip />} />
+          <Bar dataKey={team1} fill={TEAL} radius={[2, 2, 0, 0]} maxBarSize={16} />
+          <Bar dataKey={team2} fill={COOL} radius={[2, 2, 0, 0]} maxBarSize={16} />
+        </BarChart>
+      </ChartPanel>
+
+      <ChartPanel
+        title="Worm · Cumulative Runs"
+        meta="0–20 OVERS · CUMULATIVE"
+        team1={team1}
+        team2={team2}
+        loading={!ready}
+      >
+        <LineChart data={worm} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="2 4" vertical={false} stroke={EDGE} />
+          <XAxis dataKey="over" tick={axisTick} axisLine={false} tickLine={false} dy={6} interval={1} />
+          <YAxis tick={axisTick} axisLine={false} tickLine={false} width={40} />
+          <Tooltip content={<TerminalTooltip />} />
+          <Line
+            type="monotone"
+            dataKey={team1}
+            stroke={TEAL}
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4, strokeWidth: 0 }}
+          />
+          <Line
+            type="monotone"
+            dataKey={team2}
+            stroke={COOL}
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4, strokeWidth: 0 }}
+          />
+        </LineChart>
+      </ChartPanel>
+    </div>
+  );
+}
+
+const axisTick = {
+  fill: FAINT,
+  fontSize: 11,
+  fontFamily: "var(--font-mono)",
+} as const;
+
+function ChartPanel({
+  title,
+  meta,
+  team1,
+  team2,
+  loading,
+  children,
+}: {
+  title: string;
+  meta: string;
+  team1: string;
+  team2: string;
+  loading: boolean;
+  children: React.ReactElement;
+}) {
+  return (
+    <Panel
+      title={title}
+      className="mb-4"
+      right={
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-2 font-mono text-[11px] text-muted">
+            <span className="inline-block h-[7px] w-[7px] rounded-full" style={{ background: TEAL }} />
+            {team1 || "—"}
+          </span>
+          <span className="flex items-center gap-2 font-mono text-[11px] text-muted">
+            <span className="inline-block h-[7px] w-[7px] rounded-full" style={{ background: COOL }} />
+            {team2 || "—"}
+          </span>
+          <span className="hidden font-mono text-[11px] text-faint sm:inline">{meta}</span>
+        </div>
+      }
+    >
+      <div className="h-[300px] w-full">
+        {loading ? (
+          <div className="skel h-full w-full" />
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            {children}
+          </ResponsiveContainer>
+        )}
+      </div>
+    </Panel>
+  );
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function TerminalTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div
+      className="rounded-[6px] border border-edge px-3 py-2 font-mono text-[11px]"
+      style={{ background: SURFACE }}
+    >
+      <div className="mb-1 uppercase tracking-[0.08em] text-faint">{label}</div>
+      {payload.map((p: any) => (
+        <div key={p.dataKey} className="flex items-center justify-between gap-4">
+          <span className="flex items-center gap-2 text-muted">
+            <span
+              className="inline-block h-[7px] w-[7px] rounded-full"
+              style={{ background: p.color }}
+            />
+            {p.dataKey}
+          </span>
+          <span className="tnum text-ink">{p.value}</span>
+        </div>
+      ))}
+    </div>
+  );
 }

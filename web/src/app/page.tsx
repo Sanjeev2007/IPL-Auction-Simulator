@@ -1,12 +1,29 @@
-import Link from "next/link";
-import { Trophy, Shield, Play, BarChart2 } from "lucide-react";
 import {
   fetchChampionshipOdds,
   fetchTeamStats,
   type ChampionshipOdd,
   type TeamStat,
 } from "@/lib/api";
-import { normalizeBarWidth } from "@/lib/transforms";
+import { heatColor } from "@/lib/design";
+import { CountUp, HeatBar, Reveal } from "@/components/motion";
+import {
+  EmptyState,
+  HeatRamp,
+  Kpi,
+  PageHead,
+  Panel,
+  fullName,
+  tdBase,
+  thBase,
+  thL,
+} from "@/components/ui";
+
+/**
+ * Real Monte Carlo sample size behind the aggregate odds. This matches
+ * `scripts/run_tournament.py` (`simulate_multiple_seasons(teams, n=500)`) and the
+ * committed `output/tournament_results.csv`. Kept truthful — do NOT inflate it.
+ */
+const SIMULATED_SEASONS = 500;
 
 export default async function Home() {
   const [odds, teams] = await Promise.all([
@@ -14,145 +31,216 @@ export default async function Home() {
     fetchTeamStats(),
   ]);
 
+  // Backend offline / no data yet — render an honest empty state, not a crash.
+  if (odds.length === 0 && teams.length === 0) {
+    return (
+      <EmptyState title="Season Overview">
+        No simulation data available. Start the API server
+        <span className="font-mono text-faint"> (uvicorn src.api.server:app)</span> and reload.
+      </EmptyState>
+    );
+  }
+
+  const ranked = [...teams].sort((a, b) => b.overall_strength - a.overall_strength);
+
+  // Heat domains, derived from the real field so the ramp always spans it.
+  const maxChamp = Math.max(0, ...odds.map((o) => o.championship_probability));
+  const overalls = teams.map((t) => t.overall_strength);
+  const oMin = overalls.length ? Math.min(...overalls) : 0;
+  const oMax = overalls.length ? Math.max(...overalls) : 100;
+
+  const champion = odds[0];
+  const topStrength = ranked[0];
+  const fieldSize = odds.length || teams.length;
+
   return (
-    <div className="space-y-6">
-      {/* Header section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 pb-4 border-b border-[var(--color-espn-border)]">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
-            Simulation Overview
-          </h1>
-          <p className="text-[var(--color-espn-text-secondary)] text-sm sm:text-base max-w-2xl">
-            Derived from 2,000 deep Monte Carlo simulations powered by precision probability
-            models integrating IPL & international historical data.
-          </p>
-        </div>
-        <Link
-          href="/simulator"
-          className="bg-[var(--color-espn-primary)] hover:bg-[#1565C0] text-white px-6 py-3 rounded-lg font-bold shadow-lg shadow-[var(--color-espn-primary)]/20 transition-all flex items-center space-x-2 whitespace-nowrap group"
+    <div>
+      <PageHead
+        title="Season Overview"
+        sub={
+          <>
+            Monte&nbsp;Carlo projection across{" "}
+            <b className="font-semibold text-ink">{fieldSize} franchises</b> · ratings derived
+            from real Cricsheet ball-by-ball data
+          </>
+        }
+        metaLabel="Model"
+        metaValue="ball-by-ball · v0.2"
+      />
+
+      {/* KPI strip */}
+      <Reveal as="div" className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Kpi
+          label="Projected Champion"
+          value={
+            <CountUp
+              to={champion?.championship_probability ?? 0}
+              decimals={1}
+              suffix={<span className="ml-[2px] text-[13px] text-faint">%</span>}
+            />
+          }
+          foot={
+            champion ? (
+              <>
+                <span className="font-display font-semibold text-ink">{champion.team_id}</span>{" "}
+                {fullName(champion.name, champion.team_id)}
+              </>
+            ) : (
+              "—"
+            )
+          }
+        />
+        <Kpi
+          label="Top Strength Index"
+          valueColor={
+            topStrength ? heatColor(topStrength.overall_strength, oMin, oMax) : undefined
+          }
+          value={<CountUp to={topStrength?.overall_strength ?? 0} decimals={1} />}
+          foot={
+            topStrength ? (
+              <>
+                <span className="font-display font-semibold text-ink">{topStrength.team_id}</span>{" "}
+                Overall · Playing XI
+              </>
+            ) : (
+              "—"
+            )
+          }
+        />
+        <Kpi
+          label="Field Size"
+          value={<CountUp to={fieldSize} />}
+          foot="franchises simulated"
+        />
+        <Kpi
+          label="Sample"
+          value={<CountUp to={SIMULATED_SEASONS} />}
+          foot="Monte Carlo seasons"
+        />
+      </Reveal>
+
+      {/* Championship probability — hero panel */}
+      <Reveal as="div" delay={0.12} className="mb-4">
+        <Panel
+          title="Championship Probability"
+          meta={`${SIMULATED_SEASONS.toLocaleString()} SIMULATED SEASONS`}
         >
-          <Play fill="currentColor" className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
-          <span>Launch Simulator</span>
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Championship Odds */}
-        <div className="espn-card">
-          <div className="espn-card-header">
-            <div className="flex items-center space-x-2">
-              <Trophy className="w-5 h-5 text-[var(--color-espn-secondary)]" />
-              <span>To Win Championship</span>
-            </div>
-            <span className="text-xs font-normal text-[var(--color-espn-text-secondary)]">
-              SIMULATED PROBABILITY
-            </span>
-          </div>
-          <div className="p-5 space-y-5">
-            {odds.map((t: ChampionshipOdd, idx: number) => {
-              const prob = t.championship_probability;
-              // Normalize for bar width against the highest prob.
-              const barWidth = normalizeBarWidth(
-                prob,
-                odds[0]?.championship_probability ?? 0
-              );
-              const isTop = idx === 0;
-
-              return (
-                <div key={t.team_id ?? t.name} className="relative group">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <div className="flex items-center space-x-3">
-                      <span className={`text-xs font-black w-4 text-right ${isTop ? 'text-[var(--color-espn-secondary)]' : 'text-gray-500'}`}>
-                        {idx + 1}
-                      </span>
-                      <span className="font-bold text-white tracking-wide">
-                        {t.name}
-                      </span>
+          {odds.map((t: ChampionshipOdd, i: number) => {
+            const color = heatColor(t.championship_probability, 0, maxChamp);
+            const barPct = maxChamp > 0 ? (t.championship_probability / maxChamp) * 100 : 0;
+            const isLeader = i === 0;
+            return (
+              <div
+                key={t.team_id ?? t.name}
+                className="grid grid-cols-[30px_minmax(120px,190px)_1fr_auto] items-center gap-4 border-b border-edge-soft px-[6px] py-[15px] last:border-b-0 sm:gap-[18px]"
+              >
+                <div className="text-right font-mono text-[13px] text-faint">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <div className="flex min-w-0 items-center gap-[10px]">
+                  <span
+                    className="inline-block h-[26px] w-[2px] rounded-[1px]"
+                    style={{ background: isLeader ? "var(--color-accent)" : "transparent" }}
+                    aria-hidden
+                  />
+                  <div className="min-w-0">
+                    <div className="font-display text-[17px] font-semibold leading-tight tracking-[-0.01em]">
+                      {t.team_id}
                     </div>
-                    <div className="flex items-baseline space-x-3">
-                      <span className="text-xs text-[var(--color-espn-text-secondary)]">
-                        FINAL: {t.final_probability}%
-                      </span>
-                      <span className={`font-black text-lg ${isTop ? 'text-[var(--color-espn-primary)]' : 'text-gray-300'}`}>
-                        {prob}%
-                      </span>
+                    <div className="truncate text-[12px] text-muted">
+                      {fullName(t.name, t.team_id)}
                     </div>
-                  </div>
-                  <div className="w-full bg-[#374151] rounded-full h-2.5 overflow-hidden">
-                    <div
-                      className={`h-2.5 rounded-full ${isTop ? 'bg-[var(--color-espn-secondary)]' : 'bg-[var(--color-espn-primary)]'}`}
-                      style={{ width: barWidth }}
-                    ></div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+                <HeatBar pct={barPct} color={color} delay={0.2 + i * 0.05} />
+                <div className="text-right">
+                  <div className="font-mono tnum text-[28px] font-medium leading-none tracking-[-0.015em]">
+                    <CountUp
+                      to={t.championship_probability}
+                      decimals={1}
+                      delay={0.2 + i * 0.05}
+                      suffix={<span className="ml-[1px] text-[14px] text-faint">%</span>}
+                    />
+                  </div>
+                  <div className="mt-[3px] font-mono text-[11px] text-faint">
+                    reach final {t.final_probability.toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </Panel>
+      </Reveal>
 
-        {/* Team Strengths */}
-        <div className="espn-card">
-          <div className="espn-card-header">
-            <div className="flex items-center space-x-2">
-              <Shield className="w-5 h-5 text-gray-300" />
-              <span>Team Strength Index</span>
-            </div>
-            <span className="text-xs font-normal text-[var(--color-espn-text-secondary)]">
-              BASED ON PLAYING XI
+      {/* Team strength index */}
+      <Reveal as="div" delay={0.19}>
+        <Panel title="Team Strength Index" meta="PLAYING XI · 0–100">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className={thL}>Squad</th>
+                <th className={thBase}>Bat</th>
+                <th className={thBase}>Bowl</th>
+                <th className={thBase}>Overall</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ranked.map((t: TeamStat, i: number) => {
+                const color = heatColor(t.overall_strength, oMin, oMax);
+                const barPct =
+                  oMax > oMin ? ((t.overall_strength - oMin) / (oMax - oMin)) * 100 : 100;
+                return (
+                  <tr
+                    key={t.team_id}
+                    className="border-b border-edge-soft transition-colors last:border-b-0 hover:bg-white/[0.02]"
+                  >
+                    <td className="px-[10px] py-[13px] text-left">
+                      <span className="inline-block min-w-[44px] font-display text-[15px] font-semibold text-ink">
+                        {t.team_id}
+                      </span>
+                      <span className="ml-[2px] text-[11.5px] text-faint">
+                        {fullName(t.name, t.team_id)}
+                      </span>
+                    </td>
+                    <td className={tdBase}>
+                      <CountUp to={t.batting_strength} decimals={1} delay={0.28 + i * 0.04} />
+                    </td>
+                    <td className={tdBase}>
+                      <CountUp to={t.bowling_strength} decimals={1} delay={0.28 + i * 0.04} />
+                    </td>
+                    <td className={tdBase}>
+                      <div className="flex items-center justify-end gap-[10px]">
+                        <span className="text-[17px] font-semibold" style={{ color }}>
+                          <CountUp
+                            to={t.overall_strength}
+                            decimals={1}
+                            delay={0.28 + i * 0.04}
+                          />
+                        </span>
+                        <HeatBar
+                          pct={barPct}
+                          color={color}
+                          height={5}
+                          delay={0.32 + i * 0.04}
+                          className="w-16 shrink-0"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div className="mt-[14px] mb-[2px] flex items-center gap-2 px-[10px] font-mono text-[11px] text-faint">
+            <span>0</span>
+            <HeatRamp />
+            <span>100</span>
+            <span className="ml-2">
+              Overall heat-encoded · weighted bat + bowl of the projected XI
             </span>
           </div>
-          <div className="p-0">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-[#1F2937] border-b border-[var(--color-espn-border)] text-[var(--color-espn-text-secondary)] uppercase text-xs font-bold tracking-wider">
-                <tr>
-                  <th className="px-5 py-4">Squad</th>
-                  <th className="px-5 py-4 text-center">Batting</th>
-                  <th className="px-5 py-4 text-center">Bowling</th>
-                  <th className="px-5 py-4 text-right">Overall Rating</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--color-espn-border)]">
-                {teams.map((t: TeamStat, idx: number) => {
-                  const ovrWidth = normalizeBarWidth(t.overall_strength, 100);
-                  return (
-                    <tr key={t.team_id} className="hover:bg-white/5 transition-colors group">
-                      <td className="px-5 py-4">
-                        <div className="flex items-center space-x-3">
-                          <span className="font-bold text-white tracking-wide">{t.team_id}</span>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4 text-center">
-                        <span className="px-2.5 py-1 rounded bg-[#374151] text-gray-300 font-bold text-xs">
-                          {t.batting_strength}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4 text-center">
-                        <span className="px-2.5 py-1 rounded bg-[#374151] text-gray-300 font-bold text-xs">
-                          {t.bowling_strength}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <div className="flex flex-col items-end">
-                          <span className={`font-extrabold text-lg ${idx < 2 ? 'text-[var(--color-espn-secondary)]' : 'text-white'}`}>
-                            {t.overall_strength}
-                          </span>
-                          <div className="w-20 bg-[#374151] rounded-full h-1 mt-1 overflow-hidden opacity-50 group-hover:opacity-100 transition-opacity">
-                            <div className="h-full bg-white rounded-full" style={{ width: ovrWidth }}></div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="bg-[#111827] px-5 py-3 border-t border-[var(--color-espn-border)] flex items-center gap-2 text-xs text-[var(--color-espn-text-secondary)]">
-            <BarChart2 className="w-3.5 h-3.5" />
-            <span>Rating dynamically aggregated from phase-specific stat metrics</span>
-          </div>
-        </div>
-      </div>
+        </Panel>
+      </Reveal>
     </div>
   );
 }
