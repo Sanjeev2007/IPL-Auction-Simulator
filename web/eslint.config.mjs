@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // v0 reference template — kept for design reference, not part of the app.
+    "src/components/ui/sales-ops-dashboard/**",
   ]),
 ]);
 

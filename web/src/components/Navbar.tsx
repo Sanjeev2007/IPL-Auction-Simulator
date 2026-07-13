@@ -1,79 +1,139 @@
 "use client";
 
+/**
+ * Precision Terminal — the left rail.
+ *
+ * Structural port of the v0 sales-ops dashboard sidebar, restyled to the
+ * Precision Terminal system (surface panel lifted off pure black, hairline
+ * right edge, teal only on the active item). Adapted to Next's real routes:
+ * active state comes from `usePathname`, navigation uses `<Link>` — so the data
+ * pages stay server components. Collapse state is owned by `AppShell`.
+ */
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, Trophy, BarChart3, Home, Zap } from "lucide-react";
 import { clsx } from "clsx";
+import {
+  LayoutDashboard,
+  Swords,
+  Trophy,
+  BarChart3,
+  ChevronsLeft,
+  ChevronsRight,
+  type LucideIcon,
+} from "lucide-react";
 
-export default function Navbar() {
-    const pathname = usePathname();
+export const SIDEBAR_W = 232;
+export const SIDEBAR_W_COLLAPSED = 64;
 
-    const navLinks = [
-        { name: "Home", href: "/", icon: Home },
-        { name: "Live Simulator", href: "/simulator", icon: Activity },
-        { name: "Tournament Standings", href: "/tournament", icon: Trophy },
-        { name: "Global Analytics", href: "/analytics", icon: BarChart3 },
-    ];
+const navItems: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/", label: "Overview", icon: LayoutDashboard },
+  { href: "/simulator", label: "Simulator", icon: Swords },
+  { href: "/tournament", label: "Tournament", icon: Trophy },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+];
 
-    return (
-        <div className="sticky top-0 z-50 flex flex-col shadow-xl">
-            {/* Main Navbar */}
-            <nav className="bg-[#111827] text-white border-b border-white/5">
-                <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex-shrink-0 flex items-center space-x-3">
-                            <div className="bg-[#1E88E5] p-2 rounded-lg">
-                                <Trophy className="h-5 w-5 text-white" />
-                            </div>
-                            <span className="font-extrabold text-xl tracking-tight hidden sm:block">
-                                IPL<span className="text-[#1E88E5]">SIM</span>PRO
-                            </span>
-                            <span className="font-extrabold text-xl tracking-tight sm:hidden">
-                                IPL<span className="text-[#1E88E5]">SIM</span>
-                            </span>
-                        </div>
+export default function Sidebar({
+  collapsed,
+  onToggle,
+}: {
+  collapsed: boolean;
+  onToggle: () => void;
+}) {
+  const pathname = usePathname();
 
-                        <div className="flex space-x-1 sm:space-x-2">
-                            {navLinks.map((link) => {
-                                const Icon = link.icon;
-                                const isActive = pathname === link.href;
-
-                                return (
-                                    <Link
-                                        key={link.name}
-                                        href={link.href}
-                                        className={clsx(
-                                            "flex items-center space-x-2 px-3 py-2 rounded-md font-semibold text-sm transition-all duration-200",
-                                            isActive
-                                                ? "bg-[#1E88E5]/10 text-[#1E88E5]"
-                                                : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
-                                        )}
-                                    >
-                                        <Icon className="h-4 w-4" />
-                                        <span className="hidden md:block">{link.name}</span>
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            {/* Live Ticker Feed */}
-            <div className="bg-[#1E88E5] text-white h-8 overflow-hidden flex items-center shadow-inner relative">
-                <div className="absolute left-0 top-0 bottom-0 bg-[#0d47a1] px-4 flex items-center z-10 font-bold text-xs uppercase tracking-wider space-x-2 shadow-lg">
-                    <Zap className="w-3 h-3 fill-white" />
-                    <span>Live Updates</span>
-                </div>
-                <div className="whitespace-nowrap flex pl-[140px] animate-[ticker_30s_linear_infinite] group hover:[animation-play-state:paused] text-sm items-center space-x-12 font-medium">
-                    <span className="flex items-center space-x-2"><span className="text-white/70 font-bold">IPL SIM:</span> <span>CSK needed 18 off the last over, Sky hits 3 sixes!</span></span>
-                    <span className="flex items-center space-x-2"><span className="text-white/70 font-bold">RESULT:</span> <span>MI (182/4) def KKR (175/8) by 7 runs. POTM: Boom Boom (4-21)</span></span>
-                    <span className="flex items-center space-x-2"><span className="text-white/70 font-bold">TOURNAMENT:</span> <span>KKR odds jump to 48% after 3 consecutive simulated wins.</span></span>
-                    <span className="flex items-center space-x-2"><span className="text-white/70 font-bold">STAT ALERT:</span> <span>Jos Buttler crosses 73.9 Batting Rating in latest simulation tier.</span></span>
-                    <span className="flex items-center space-x-2"><span className="text-white/70 font-bold">IPL SIM:</span> <span>CSK needed 18 off the last over, Sky hits 3 sixes!</span></span>
-                    <span className="flex items-center space-x-2"><span className="text-white/70 font-bold">RESULT:</span> <span>MI (182/4) def KKR (175/8) by 7 runs. POTM: Boom Boom (4-21)</span></span>
-                </div>
-            </div>
+  return (
+    <aside
+      className="fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-edge bg-surface transition-[width] duration-300 ease-out"
+      style={{ width: collapsed ? SIDEBAR_W_COLLAPSED : SIDEBAR_W }}
+    >
+      {/* Wordmark */}
+      <div className="flex h-16 items-center gap-3 border-b border-edge px-[18px]">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] border border-edge bg-elevated font-display text-[15px] font-bold leading-none text-accent">
+          S
         </div>
-    );
+        <Link
+          href="/"
+          className={clsx(
+            "font-display text-[18px] font-bold tracking-tight whitespace-nowrap transition-opacity duration-200",
+            collapsed && "pointer-events-none opacity-0"
+          )}
+        >
+          IPL<span className="text-accent">SIM</span>
+        </Link>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 space-y-1 overflow-hidden px-3 py-4">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive =
+            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              title={collapsed ? item.label : undefined}
+              aria-current={isActive ? "page" : undefined}
+              className={clsx(
+                "group relative flex items-center gap-3 rounded-[6px] px-3 py-2.5 text-[13px] font-medium transition-colors duration-150",
+                isActive
+                  ? "bg-nav-active text-ink"
+                  : "text-muted hover:bg-nav-active/50 hover:text-ink"
+              )}
+            >
+              {/* Active teal tick */}
+              <span
+                className={clsx(
+                  "absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-r-full bg-accent transition-opacity duration-200",
+                  isActive ? "opacity-100" : "opacity-0"
+                )}
+                aria-hidden
+              />
+              <Icon
+                className={clsx(
+                  "h-[18px] w-[18px] shrink-0 transition-colors",
+                  isActive ? "text-accent" : "text-faint group-hover:text-muted"
+                )}
+              />
+              <span
+                className={clsx(
+                  "whitespace-nowrap transition-opacity duration-200",
+                  collapsed && "pointer-events-none opacity-0"
+                )}
+              >
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Footer: version + collapse toggle */}
+      <div className="border-t border-edge p-3">
+        <div
+          className={clsx(
+            "mb-2 px-2 font-mono text-[10px] leading-tight tracking-[0.04em] text-faint transition-opacity duration-200",
+            collapsed && "hidden"
+          )}
+        >
+          v0.2 · precision-terminal
+        </div>
+        <button
+          onClick={onToggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="flex w-full items-center justify-center gap-2 rounded-[6px] px-3 py-2 text-[12px] text-faint transition-colors hover:bg-nav-active/50 hover:text-muted"
+        >
+          {collapsed ? (
+            <ChevronsRight className="h-4 w-4" />
+          ) : (
+            <>
+              <ChevronsLeft className="h-4 w-4" />
+              <span>Collapse</span>
+            </>
+          )}
+        </button>
+      </div>
+    </aside>
+  );
 }

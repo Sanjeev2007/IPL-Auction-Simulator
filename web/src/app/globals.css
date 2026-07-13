@@ -1,59 +1,115 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Precision Terminal — design system
+   Dark-committed data terminal. Data is the hero.
+   Display: Clash Grotesk · UI: Geist · Numerics: Geist Mono
+   ============================================================ */
 @theme {
-  --color-espn-bg: #0B1724;
-  --color-espn-surface: #111827;
-  --color-espn-card: #1F2937;
-  --color-espn-primary: #1E88E5;
-  --color-espn-secondary: #F59E0B;
-  --color-espn-text-primary: #F3F4F6;
-  --color-espn-text-secondary: #9CA3AF;
-  --color-espn-border: rgba(255, 255, 255, 0.1);
-  --animate-ticker: ticker 30s linear infinite;
+  --color-bg: #000000;        /* canvas — PURE BLACK (owner's hard requirement) */
+  --color-surface: #0A0C10;   /* panel background, lifted above black */
+  --color-elevated: #12151C;  /* panel headers, chips */
+  --color-edge: #20252F;      /* hairline borders — the primary structural device */
+  --color-edge-soft: #15181F; /* inner row dividers */
+  --color-nav-active: #171B24;/* active nav tab background */
+  --color-ink: #E6E9EF;
+  --color-muted: #8A93A3;
+  --color-faint: #5A6373;
+
+  --color-accent: #33E1C6;   /* signal — used rarely */
+  --color-cool: #5B8DEF;     /* heat ramp: low  */
+  --color-warm: #F5B841;     /* heat ramp: mid  */
+  --color-hot: #FF6B5A;      /* heat ramp: high */
+
+  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
-@keyframes ticker {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-/* Custom base styles */
 body {
-  background-color: var(--color-espn-bg);
-  color: var(--color-espn-text-primary);
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Card utilities */
+.font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+.tnum { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+/* Uppercase micro-labels used across panels */
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
 @layer components {
-  .espn-card {
-    @apply bg-[var(--color-espn-card)] rounded-xl shadow-lg border border-[var(--color-espn-border)] overflow-hidden transition-all duration-300;
+  /* Hairline-bordered data pane (the Bloomberg pane) */
+  .panel {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-edge);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.15rem;
+    border-bottom: 1px solid var(--color-edge);
+    background-color: var(--color-elevated);
+  }
+  .panel-title {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .panel-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--color-faint);
+  }
+  .panel-body { padding: 0.35rem 1.15rem 1rem; }
+
+  /* Skeleton block — opacity pulse (no gradient, per the brief) */
+  .skel {
+    background-color: var(--color-elevated);
+    border-radius: 4px;
+    animation: skel-pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes skel-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
 
-  .espn-card-header {
-    @apply bg-[var(--color-espn-surface)] px-5 py-3 border-b border-[var(--color-espn-border)] text-sm font-bold text-gray-200 uppercase tracking-widest flex items-center justify-between;
+  /* Primary accent CTA — the one sanctioned teal button */
+  .cta-accent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--color-accent);
+    color: #04110E;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: filter 0.15s ease, opacity 0.15s ease;
   }
+  .cta-accent:hover { filter: brightness(1.08); }
+  .cta-accent:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
 
-  /* Scrollbar styling for dark mode */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: var(--color-bg); }
+  ::-webkit-scrollbar-thumb { background: var(--color-edge); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+}
 
-  ::-webkit-scrollbar-track {
-    background: var(--color-espn-bg);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #374151;
-    border-radius: 3px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-espn-primary);
-  }
+@media (prefers-reduced-motion: reduce) {
+  .skel { animation: none; }
 }
