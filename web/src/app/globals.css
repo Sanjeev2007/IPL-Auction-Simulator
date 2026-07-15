@@ -36,6 +36,15 @@ body {
 .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
 .tnum { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
 
+/* Keyboard focus — visible on both dark surfaces and the teal CTA (ink outline,
+   never a color that vanishes into the element it rings). Mouse clicks don't
+   trigger :focus-visible, so this stays out of the way for pointer users. */
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* Uppercase micro-labels used across panels */
 .eyebrow {
   font-size: 11px;

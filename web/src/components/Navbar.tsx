@@ -8,6 +8,10 @@
  * right edge, teal only on the active item). Adapted to Next's real routes:
  * active state comes from `usePathname`, navigation uses `<Link>` — so the data
  * pages stay server components. Collapse state is owned by `AppShell`.
+ *
+ * Responsive: on ≥md it's a fixed rail whose width follows `collapsed`. Below md
+ * it becomes an off-canvas drawer (full 232px), slid in by `mobileOpen` and
+ * dismissed by tapping a nav item, the backdrop, or the close button.
  */
 
 import Link from "next/link";
@@ -18,8 +22,10 @@ import {
   Swords,
   Trophy,
   BarChart3,
+  Gavel,
   ChevronsLeft,
   ChevronsRight,
+  X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -31,21 +37,31 @@ const navItems: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/simulator", label: "Simulator", icon: Swords },
   { href: "/tournament", label: "Tournament", icon: Trophy },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/auction", label: "Auction", icon: Gavel },
 ];
 
 export default function Sidebar({
   collapsed,
   onToggle,
+  mobileOpen,
+  onClose,
 }: {
   collapsed: boolean;
   onToggle: () => void;
+  mobileOpen: boolean;
+  onClose: () => void;
 }) {
   const pathname = usePathname();
 
   return (
     <aside
-      className="fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-edge bg-surface transition-[width] duration-300 ease-out"
-      style={{ width: collapsed ? SIDEBAR_W_COLLAPSED : SIDEBAR_W }}
+      className={clsx(
+        "fixed left-0 top-0 z-50 flex h-screen w-[232px] flex-col border-r border-edge bg-surface",
+        "transition-transform duration-300 ease-out motion-reduce:transition-none",
+        "md:z-40 md:w-[var(--sbw)] md:translate-x-0 md:transition-[width]",
+        mobileOpen ? "translate-x-0" : "-translate-x-full"
+      )}
+      style={{ ["--sbw" as string]: collapsed ? `${SIDEBAR_W_COLLAPSED}px` : `${SIDEBAR_W}px` }}
     >
       {/* Wordmark */}
       <div className="flex h-16 items-center gap-3 border-b border-edge px-[18px]">
@@ -56,11 +72,19 @@ export default function Sidebar({
           href="/"
           className={clsx(
             "font-display text-[18px] font-bold tracking-tight whitespace-nowrap transition-opacity duration-200",
-            collapsed && "pointer-events-none opacity-0"
+            collapsed && "md:pointer-events-none md:opacity-0"
           )}
         >
           IPL<span className="text-accent">SIM</span>
         </Link>
+        {/* Mobile-only close */}
+        <button
+          onClick={onClose}
+          aria-label="Close menu"
+          className="ml-auto flex h-8 w-8 items-center justify-center rounded-[6px] text-faint transition-colors hover:bg-nav-active/50 hover:text-muted md:hidden"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Nav */}
@@ -73,6 +97,7 @@ export default function Sidebar({
             <Link
               key={item.href}
               href={item.href}
+              onClick={onClose}
               title={collapsed ? item.label : undefined}
               aria-current={isActive ? "page" : undefined}
               className={clsx(
@@ -99,7 +124,7 @@ export default function Sidebar({
               <span
                 className={clsx(
                   "whitespace-nowrap transition-opacity duration-200",
-                  collapsed && "pointer-events-none opacity-0"
+                  collapsed && "md:pointer-events-none md:opacity-0"
                 )}
               >
                 {item.label}
@@ -109,8 +134,8 @@ export default function Sidebar({
         })}
       </nav>
 
-      {/* Footer: version + collapse toggle */}
-      <div className="border-t border-edge p-3">
+      {/* Footer: version + collapse toggle (desktop only) */}
+      <div className="hidden border-t border-edge p-3 md:block">
         <div
           className={clsx(
             "mb-2 px-2 font-mono text-[10px] leading-tight tracking-[0.04em] text-faint transition-opacity duration-200",
