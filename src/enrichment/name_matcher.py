@@ -23,30 +23,30 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 KNOWN_ALIASES = {
-    # Nicknames / abbreviations in our CSV
-    "Sky": ["SPD Yadav", "SA Yadav", "Suryakumar Yadav"],
-    "Msd": ["MS Dhoni"],
-    "Kl Rahul": ["KL Rahul"],
-    "Qdk": ["Q de Kock"],
-    "Boom Boom": ["JJ Bumrah"],
-    "Ak47": ["Ankit Rajpoot"],  # or could be another player
-    "Nkr": ["Nitish Kumar Reddy", "N Kumar Reddy"],
-    "Washy Sundar": ["W Sundar", "Washington Sundar"],
-    "Yuzi Chahal": ["YS Chahal"],
-    "Faf Du Plessis": ["F du Plessis"],
+    # Full CSV name → Cricsheet-style name(s). Keys must match players_master.csv.
+    "Suryakumar Yadav": ["SA Yadav", "SPD Yadav"],
+    "MS Dhoni": ["MS Dhoni"],
+    "KL Rahul": ["KL Rahul"],
+    "Quinton de Kock": ["Q de Kock"],
+    "Jasprit Bumrah": ["JJ Bumrah"],
+    "Anshul Kamboj": ["A Kamboj", "AS Kamboj"],  # "AK-47"
+    "Nitish Kumar Reddy": ["Nitish Kumar Reddy", "N Kumar Reddy"],
+    "Washington Sundar": ["W Sundar"],
+    "Yuzvendra Chahal": ["YS Chahal"],
+    "Faf du Plessis": ["F du Plessis"],
     "Eshan Malinga": ["E Malinga"],
 
     # Players whose Cricsheet names differ significantly
-    "Markram": ["AK Markram"],
-    "Natarajan": ["T Natarajan"],
+    "Aiden Markram": ["AK Markram"],
+    "T Natarajan": ["T Natarajan"],
     "Rovman Powell": ["R Powell"],
     "Shimron Hetmyer": ["SO Hetmyer"],
     "Rachin Ravindra": ["R Ravindra"],
-    "Venky Iyer": ["V Iyer"],
-    "Sikandhar Raza": ["Sikandar Raza"],
-    "Shakib Al-Hasan": ["Shakib Al Hasan"],
-    "Naveen-Ul-Haq": ["Naveen-ul-Haq"],
-    "Mujeeb-Ur-Rahman": ["Mujeeb Ur Rahman"],
+    "Venkatesh Iyer": ["V Iyer"],
+    "Sikandar Raza": ["Sikandar Raza"],
+    "Shakib Al Hasan": ["Shakib Al Hasan"],
+    "Naveen-ul-Haq": ["Naveen-ul-Haq"],
+    "Mujeeb ur Rahman": ["Mujeeb Ur Rahman"],
     "Rahmanullah Gurbaz": ["Rahmanullah Gurbaz"],
     "Allah Ghazanfar": ["Allah Ghazanfar"],
     "M. Siddharth": ["M Siddharth"],

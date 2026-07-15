@@ -1,18 +1,18 @@
 Player_ID,Player Name,Role,Base Price (INR),Base Price Display,Country,Batting Style,Bowling Style
 BAT001,Abhishek Sharma,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
-BAT002,Sky,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
+BAT002,Suryakumar Yadav,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT003,Tilak Varma,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT004,Ruturaj Gaikwad,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT005,Rohit Sharma,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT006,Virat Kohli,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT007,Shubman Gill,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT008,Sai Sudharsan,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
-BAT009,Markram,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
+BAT009,Aiden Markram,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT010,Mitchell Marsh,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT011,Travis Head,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT012,David Miller,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT013,Fraser McGurk,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
-BAT014,Faf Du Plessis,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
+BAT014,Faf du Plessis,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT015,Rajat Patidar,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT016,Devdutt Padikkal,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
 BAT017,Shreyas Iyer,Batsmen,20000000,2.0Cr,Unknown,Unknown,Unknown
@@ -63,16 +63,16 @@ BAT061,Naman Dhir,Batsmen,5000000,50L,Unknown,Unknown,Unknown
 BAT062,Shaikh Rasheed,Batsmen,5000000,50L,Unknown,Unknown,Unknown
 BAT063,Musheer Khan,Batsmen,5000000,50L,Unknown,Unknown,Unknown
 BAT064,Abhinav Manohar,Batsmen,5000000,50L,Unknown,Unknown,Unknown
-WK001,Msd,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
+WK001,MS Dhoni,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
 WK002,Rishabh Pant,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
-WK003,Kl Rahul,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
+WK003,KL Rahul,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
 WK004,Nicolas Pooran,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
 WK005,Heinrich Klaasen,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
 WK006,Sanju Samson,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
 WK007,Ishan Kishan,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
 WK008,Phil Salt,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
 WK009,Devon Conway,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
-WK010,Qdk,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
+WK010,Quinton de Kock,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
 WK011,Jos Buttler,Wicketkeepers,20000000,2.0Cr,Unknown,Unknown,Unknown
 WK012,Jitesh Sharma,Wicketkeepers,15000000,1.5Cr,Unknown,Unknown,Unknown
 WK013,Dinesh Karthik,Wicketkeepers,15000000,1.5Cr,Unknown,Unknown,Unknown
@@ -105,18 +105,18 @@ AR012,Kieron Pollard,All Rounders,20000000,2.0Cr,Unknown,Unknown,Unknown
 AR013,Glenn Maxwell,All Rounders,20000000,2.0Cr,Unknown,Unknown,Unknown
 AR014,Pat Cummins,All Rounders,20000000,2.0Cr,Unknown,Unknown,Unknown
 AR015,Axar Patel,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
-AR016,Washy Sundar,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
+AR016,Washington Sundar,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
 AR017,Ravi Ashwin,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
 AR018,Krunal Pandya,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
 AR019,Jason Holder,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
 AR020,Mitch Santner,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
-AR021,Nkr,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
+AR021,Nitish Kumar Reddy,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
 AR022,Azmat Omarzai,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
-AR023,Venky Iyer,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
+AR023,Venkatesh Iyer,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
 AR024,Shardul Thakur,All Rounders,15000000,1.5Cr,Unknown,Unknown,Unknown
 AR025,Rahul Tewatia,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
 AR026,Vijay Shankar,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
-AR027,Sikandhar Raza,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
+AR027,Sikandar Raza,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
 AR028,Romario Shepherd,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
 AR029,Jamie Overton,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
 AR030,Daryl Mitchell,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
@@ -128,9 +128,9 @@ AR035,Ramandeep Singh,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
 AR036,Jimmy Neesham,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
 AR037,Mohammed Nabi,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
 AR038,Moeen Ali,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
-AR039,Shakib Al-Hasan,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
+AR039,Shakib Al Hasan,All Rounders,10000000,1.0Cr,Unknown,Unknown,Unknown
 AR040,Vipraj Nigam,All Rounders,5000000,50L,Unknown,Unknown,Unknown
-PACE001,Boom Boom,Fast Bowlers,20000000,2.0Cr,Unknown,Unknown,Unknown
+PACE001,Jasprit Bumrah,Fast Bowlers,20000000,2.0Cr,Unknown,Unknown,Unknown
 PACE002,Arshdeep Singh,Fast Bowlers,20000000,2.0Cr,Unknown,Unknown,Unknown
 PACE003,Harshit Rana,Fast Bowlers,20000000,2.0Cr,Unknown,Unknown,Unknown
 PACE004,Mohammed Siraj,Fast Bowlers,20000000,2.0Cr,Unknown,Unknown,Unknown
@@ -152,7 +152,7 @@ PACE019,Mukesh Kumar,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
 PACE020,Umesh Yadav,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
 PACE021,Ishant Sharma,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
 PACE022,Umran Malik,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
-PACE023,Natarajan,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
+PACE023,T Natarajan,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
 PACE024,Prasidh Krishna,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
 PACE025,Mohit Sharma,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
 PACE026,Matt Henry,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
@@ -161,7 +161,7 @@ PACE028,Tom Curran,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
 PACE029,Mustafizur Rahman,Fast Bowlers,15000000,1.5Cr,Unknown,Unknown,Unknown
 PACE030,Avesh Khan,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
 PACE031,Tushar Deshpande,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
-PACE032,Ak47,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
+PACE032,Anshul Kamboj,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
 PACE033,Prince Yadav,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
 PACE034,Mayank Yadav,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
 PACE035,Mohsin Khan,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
@@ -178,7 +178,7 @@ PACE045,Corbin Bosch,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
 PACE046,Blessing Muzarabani,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
 PACE047,Gerald Coetzee,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
 PACE048,Chris Woakes,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
-PACE049,Naveen-Ul-Haq,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
+PACE049,Naveen-ul-Haq,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
 PACE050,Mukesh Choudhary,Fast Bowlers,10000000,1.0Cr,Unknown,Unknown,Unknown
 PACE051,Arjun Tendulkar,Fast Bowlers,5000000,50L,Unknown,Unknown,Unknown
 PACE052,Kamalesh Nagarkoti,Fast Bowlers,5000000,50L,Unknown,Unknown,Unknown
@@ -200,7 +200,7 @@ SPIN001,Ravi Bishnoi,Spinners,20000000,2.0Cr,Unknown,Unknown,Unknown
 SPIN002,Rashid Khan,Spinners,20000000,2.0Cr,Unknown,Unknown,Unknown
 SPIN003,Noor Ahmad,Spinners,20000000,2.0Cr,Unknown,Unknown,Unknown
 SPIN004,Varun Chakravarthy,Spinners,20000000,2.0Cr,Unknown,Unknown,Unknown
-SPIN005,Yuzi Chahal,Spinners,20000000,2.0Cr,Unknown,Unknown,Unknown
+SPIN005,Yuzvendra Chahal,Spinners,20000000,2.0Cr,Unknown,Unknown,Unknown
 SPIN006,Kuldeep Yadav,Spinners,20000000,2.0Cr,Unknown,Unknown,Unknown
 SPIN007,Rahul Chahar,Spinners,15000000,1.5Cr,Unknown,Unknown,Unknown
 SPIN008,Maheesh Theekshana,Spinners,15000000,1.5Cr,Unknown,Unknown,Unknown
@@ -217,7 +217,7 @@ SPIN018,Vignesh Puthur,Spinners,5000000,50L,Unknown,Unknown,Unknown
 SPIN019,Karn Sharma,Spinners,5000000,50L,Unknown,Unknown,Unknown
 SPIN020,Shreyas Gopal,Spinners,5000000,50L,Unknown,Unknown,Unknown
 SPIN021,Mayank Markande,Spinners,5000000,50L,Unknown,Unknown,Unknown
-SPIN022,Mujeeb-Ur-Rahman,Spinners,5000000,50L,Unknown,Unknown,Unknown
+SPIN022,Mujeeb ur Rahman,Spinners,5000000,50L,Unknown,Unknown,Unknown
 SPIN023,Swapnil Singh,Spinners,5000000,50L,Unknown,Unknown,Unknown
 SPIN024,Allah Ghazanfar,Spinners,5000000,50L,Unknown,Unknown,Unknown
 SPIN025,Zeeshan Ansari,Spinners,5000000,50L,Unknown,Unknown,Unknown
