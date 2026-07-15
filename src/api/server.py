@@ -47,6 +47,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ---------------------------------------------------------------------------
+# Live auction (Milestone 5) — REST + WebSocket transport for the auction
+# state machine in src/auction/. Additive: the static dashboard is untouched.
+# ---------------------------------------------------------------------------
+from src.api.auction_ws import router as auction_router  # noqa: E402
+
+app.include_router(auction_router)
+
 
 class MatchRequest(BaseModel):
     team1_id: str
