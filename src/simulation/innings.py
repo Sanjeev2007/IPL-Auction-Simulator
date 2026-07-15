@@ -18,9 +18,12 @@ from src.models.match_state import InningsState, BallOutcome, BatterScorecard, B
 # Base probabilities based on historical T20 data
 BASE_PROBS = {
     # Phase: (DOT, SINGLE, DOUBLE, TRIPLE, FOUR, SIX, WICKET)
-    "powerplay": (0.40, 0.25, 0.05, 0.01, 0.15, 0.06, 0.08),
-    "middle":    (0.32, 0.40, 0.08, 0.01, 0.09, 0.05, 0.05),
-    "death":     (0.28, 0.22, 0.08, 0.01, 0.14, 0.15, 0.12),
+    # Calibrated (M7) against real IPL: wicket rates lowered and the freed
+    # probability shifted into runs so mean scores match ~170 and collapses
+    # aren't over-frequent. See scripts/validate_engine.py.
+    "powerplay": (0.40, 0.283, 0.05, 0.01, 0.147, 0.055, 0.055),
+    "middle":    (0.32, 0.415, 0.081, 0.01, 0.089, 0.047, 0.038),
+    "death":     (0.28, 0.262, 0.08, 0.01, 0.143, 0.140, 0.085),
 }
 
 OUTCOME_TYPES = ["DOT", "SINGLE", "DOUBLE", "TRIPLE", "FOUR", "SIX", "WICKET"]
@@ -91,8 +94,10 @@ class InningsSimulator:
         # FOUR, SIX (heavy batter favor)
         adj[4] = base[4] * (bat_mod ** 1.5) / (bowl_mod ** 0.5)
         adj[5] = base[5] * (bat_mod ** 1.8) / (bowl_mod ** 0.8)
-        # WICKET (heavy bowler favor)
-        adj[6] = base[6] * (bowl_mod ** 1.5) / (bat_mod ** 0.8)
+        # WICKET (bowler favor). Softer batter exponent (0.5, was 0.8) so weak
+        # tail batters aren't punished so hard that innings collapse too often
+        # (M7 calibration — cut the excess "under-140" tail vs real IPL).
+        adj[6] = base[6] * (bowl_mod ** 1.3) / (bat_mod ** 0.5)
 
         # Chase Logic (Bazball mode)
         if self.state.target:
@@ -103,10 +108,10 @@ class InningsSimulator:
                 # If required RR is high (> 10), batters swing harder -> more 6s, 4s AND Wickets
                 if req_rr > 10.0:
                     pressure_factor = min(req_rr / 10.0, 2.0)  # max 2x multiplier
-                    adj[4] *= (pressure_factor * 1.1)
-                    adj[5] *= (pressure_factor * 1.3)
-                    adj[6] *= (pressure_factor * 1.2)
-                    adj[0] *= 0.8 # fewer dots
+                    adj[4] *= (pressure_factor * 1.0)
+                    adj[5] *= (pressure_factor * 1.15)
+                    adj[6] *= (pressure_factor * 1.55)  # high-RR chases carry real wicket risk
+                    adj[0] *= 0.85 # fewer dots
         
         # Normalize to 1.0
         total = sum(adj)
