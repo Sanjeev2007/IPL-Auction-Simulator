@@ -12,6 +12,21 @@
 export const API_BASE =
   (process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000").replace(/\/$/, "");
 
+/**
+ * Whether a usable auction backend is reachable. The live auction needs a
+ * persistent WebSocket server; the default API_BASE is localhost. So it's
+ * available when (a) an explicit non-local backend is configured, or (b) the
+ * app itself is being served from localhost (local dev). On a deployed host
+ * with no backend configured, this is false and the UI shows a notice instead
+ * of a form that would fail. Call from the client (checks window).
+ */
+export function auctionBackendConfigured(): boolean {
+  const isLocalBase = /localhost|127\.0\.0\.1/.test(API_BASE);
+  if (!isLocalBase) return true;
+  if (typeof window === "undefined") return true; // SSR; client re-checks
+  return /localhost|127\.0\.0\.1/.test(window.location.hostname);
+}
+
 /** WS origin — explicit override, else derived from the REST base (http→ws). */
 export function wsBase(): string {
   const explicit = process.env.NEXT_PUBLIC_WS_URL;

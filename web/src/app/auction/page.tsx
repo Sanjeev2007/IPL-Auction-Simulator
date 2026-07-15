@@ -7,13 +7,13 @@
  * backend; it is entirely separate from the static dashboard pages.
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Gavel, Plus, LogIn, Settings2 } from "lucide-react";
 import { PageHead, Panel } from "@/components/ui";
 import { Reveal } from "@/components/motion";
 import { Field, GhostButton } from "@/components/auction/pieces";
-import { createRoom, joinRoom, saveCreds } from "@/lib/auction";
+import { createRoom, joinRoom, saveCreds, auctionBackendConfigured } from "@/lib/auction";
 
 export default function AuctionLanding() {
   const router = useRouter();
@@ -23,6 +23,12 @@ export default function AuctionLanding() {
   const [joinCode, setJoinCode] = useState("");
   const [busy, setBusy] = useState<"create" | "join" | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // The live auction needs a hosted realtime (WebSocket) backend. On a deployed
+  // host with none configured, show an honest notice instead of a form that
+  // would fail. Defaults to available so local dev is unaffected.
+  const [available, setAvailable] = useState(true);
+  useEffect(() => setAvailable(auctionBackendConfigured()), []);
 
   // Optional host settings (backend already supports these overrides).
   const [showAdv, setShowAdv] = useState(false);
@@ -102,6 +108,30 @@ export default function AuctionLanding() {
         </Reveal>
       )}
 
+      {!available ? (
+        <Reveal as="div">
+          <Panel
+            title="Hosted auction — coming soon"
+            right={<span className="font-mono text-[11px] text-faint">LOCAL ONLY</span>}
+          >
+            <div className="space-y-3 pt-1 text-[13.5px] leading-relaxed text-muted">
+              <p>
+                The live multiplayer auction needs a persistent realtime (WebSocket) server, which
+                isn&apos;t hosted yet. Everything else here runs backend-free — the auction is the
+                one feature that can&apos;t.
+              </p>
+              <p>
+                It&apos;s fully working when you run the project locally: start the API
+                (
+                <code className="font-mono text-[12px] text-accent">
+                  uvicorn src.api.server:app --port 8000
+                </code>
+                ), run the dashboard, then create a room and share the code.
+              </p>
+            </div>
+          </Panel>
+        </Reveal>
+      ) : (
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Create */}
         <Reveal as="div">
@@ -185,10 +215,12 @@ export default function AuctionLanding() {
           </Panel>
         </Reveal>
       </div>
+      )}
 
       <p className="mt-5 font-mono text-[11px] leading-relaxed text-faint">
-        Auth-lite · no accounts. Your seat is saved to this browser so you can reconnect if the
-        connection drops. Player data is the engine&apos;s real Cricsheet-derived catalog.
+        {available
+          ? "Auth-lite · no accounts. Your seat is saved to this browser so you can reconnect if the connection drops. Player data is the engine's real Cricsheet-derived catalog."
+          : "Player data is the engine's real Cricsheet-derived catalog."}
       </p>
     </div>
   );
